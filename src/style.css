@@ -1657,6 +1657,43 @@ body {
   color: #93C5FD;
 }
 
+/* Multiplier Stats - Special styling */
+.stat-separator {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+  margin: 10px 0;
+  position: relative;
+}
+
+.stat-separator::before {
+  content: '⚡';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--card-bg);
+  padding: 0 8px;
+  font-size: 0.8rem;
+  color: var(--accent-color);
+}
+
+.stat-item.multiplier-stat {
+  background: linear-gradient(135deg, var(--dark-color), rgba(251, 191, 36, 0.15));
+  border-color: rgba(251, 191, 36, 0.4);
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.1);
+}
+
+.stat-item.multiplier-stat .stat-name {
+  color: #FCD34D;
+  font-weight: 600;
+}
+
+.stat-item.multiplier-stat .stat-value {
+  color: #FDE047;
+  font-weight: bold;
+  text-shadow: 0 0 4px rgba(253, 224, 71, 0.3);
+}
+
 .stat-value.negative {
   color: var(--secondary-color);
 }
