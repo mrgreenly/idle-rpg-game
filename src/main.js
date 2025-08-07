@@ -2,6 +2,7 @@ import './style.css'
 import { ITEM_RARITIES, BASE_ITEMS, AFFIXES } from './data/items.js'
 import { ZONES, SHOP_ITEMS } from './data/zones.js'
 import { getRandomDeathMessage } from './data/deathMessages.js'
+import { TALENT_TREES } from './data/talentTrees.js'
 
 // Helper function to get asset URL with proper base path handling
 function getAssetUrl(path) {
@@ -10,198 +11,6 @@ function getAssetUrl(path) {
   const cleanPath = path.startsWith('/') ? path.slice(1) : path;
   return baseUrl + cleanPath;
 }
-
-// Talent Tree Data
-const TALENT_TREES = {
-  exploration: {
-    name: 'Path of Exploration',
-    icon: '🗺️',
-    description: 'Unlock new zones and content',
-    nodes: [
-      {
-        id: 'exploration_1',
-        name: 'Zone Scout',
-        icon: '🧭',
-        description: 'Unlocks additional zones earlier',
-        effect: 'Reduce zone unlock level requirements by 2',
-        cost: 50,
-        maxLevel: 1,
-        prerequisites: []
-      },
-      {
-        id: 'exploration_2',
-        name: 'Monster Hunter',
-        icon: '🏹',
-        description: 'Encounter rare enemies more often',
-        effect: 'Increase rare enemy spawn chance by 25%',
-        cost: 75,
-        maxLevel: 1,
-        prerequisites: ['exploration_1']
-      },
-      {
-        id: 'exploration_3',
-        name: 'Boss Slayer',
-        icon: '🗡️',
-        description: 'Reduce boss requirements',
-        effect: 'Reduce boss spawn requirements by 5 kills',
-        cost: 100,
-        maxLevel: 1,
-        prerequisites: ['exploration_2']
-      },
-      {
-        id: 'exploration_4',
-        name: 'Zone Master',
-        icon: '👑',
-        description: 'Access to exclusive high-tier zones',
-        effect: 'Unlocks special endgame zones',
-        cost: 200,
-        maxLevel: 1,
-        prerequisites: ['exploration_3']
-      }
-    ]
-  },
-  power: {
-    name: 'Path of Power',
-    icon: '⚔️',
-    description: 'Increase combat effectiveness',
-    nodes: [
-      {
-        id: 'power_1',
-        name: 'Warrior Training',
-        icon: '💪',
-        description: 'Increase base attack power',
-        effect: '+5 base attack per level',
-        cost: 40,
-        maxLevel: 5,
-        prerequisites: []
-      },
-      {
-        id: 'power_2',
-        name: 'Combat Mastery',
-        icon: '🎯',
-        description: 'Improve critical hit chance',
-        effect: '+2% critical chance per level',
-        cost: 60,
-        maxLevel: 3,
-        prerequisites: ['power_1']
-      },
-      {
-        id: 'power_3',
-        name: 'Berserker Rage',
-        icon: '⚡',
-        description: 'Increase attack speed',
-        effect: '+10% attack speed per level',
-        cost: 80,
-        maxLevel: 3,
-        prerequisites: ['power_2']
-      },
-      {
-        id: 'power_4',
-        name: 'Legendary Warrior',
-        icon: '🏆',
-        description: 'Massive combat bonuses',
-        effect: '+50% damage, +25% crit chance',
-        cost: 250,
-        maxLevel: 1,
-        prerequisites: ['power_3']
-      }
-    ]
-  },
-  wealth: {
-    name: 'Path of Wealth',
-    icon: '💰',
-    description: 'Increase gold gain and rewards',
-    nodes: [
-      {
-        id: 'wealth_1',
-        name: 'Coin Collector',
-        icon: '🪙',
-        description: 'Increase gold drops from enemies',
-        effect: '+25% gold gain per level',
-        cost: 45,
-        maxLevel: 4,
-        prerequisites: []
-      },
-      {
-        id: 'wealth_2',
-        name: 'Lucky Find',
-        icon: '🍀',
-        description: 'Increase item drop chance',
-        effect: '+10% item drop chance per level',
-        cost: 70,
-        maxLevel: 3,
-        prerequisites: ['wealth_1']
-      },
-      {
-        id: 'wealth_3',
-        name: 'Treasure Hunter',
-        icon: '💎',
-        description: 'Higher chance for rare items',
-        effect: '+15% chance for higher rarity per level',
-        cost: 90,
-        maxLevel: 2,
-        prerequisites: ['wealth_2']
-      },
-      {
-        id: 'wealth_4',
-        name: 'Golden Touch',
-        icon: '✨',
-        description: 'Massive wealth bonuses',
-        effect: 'Double gold gain, +50% item drops',
-        cost: 300,
-        maxLevel: 1,
-        prerequisites: ['wealth_3']
-      }
-    ]
-  },
-  knowledge: {
-    name: 'Path of Knowledge',
-    icon: '📚',
-    description: 'Increase experience gain',
-    nodes: [
-      {
-        id: 'knowledge_1',
-        name: 'Quick Learner',
-        icon: '📖',
-        description: 'Gain experience faster',
-        effect: '+20% experience gain per level',
-        cost: 35,
-        maxLevel: 5,
-        prerequisites: []
-      },
-      {
-        id: 'knowledge_2',
-        name: 'Battle Wisdom',
-        icon: '⚔️',
-        description: 'Bonus XP from combat victories',
-        effect: '+50% bonus XP from defeating enemies per level',
-        cost: 55,
-        maxLevel: 3,
-        prerequisites: ['knowledge_1']
-      },
-      {
-        id: 'knowledge_3',
-        name: 'Master Scholar',
-        icon: '🎓',
-        description: 'Reduce XP requirements for leveling',
-        effect: '-10% XP needed per level (max 30%)',
-        cost: 85,
-        maxLevel: 3,
-        prerequisites: ['knowledge_2']
-      },
-      {
-        id: 'knowledge_4',
-        name: 'Enlightened One',
-        icon: '🔮',
-        description: 'Transcendent learning abilities',
-        effect: 'Triple XP gain, start at level 5',
-        cost: 400,
-        maxLevel: 1,
-        prerequisites: ['knowledge_3']
-      }
-    ]
-  }
-};
 
 // Global variable to track Shift key state
 let isShiftPressed = false;
@@ -275,7 +84,7 @@ function generateRandomItem() {
     critDamage: baseItem.critDamage,
     dodge: baseItem.dodge,
     blockChance: baseItem.blockChance,
-    price: Math.floor((baseItem.attack + baseItem.maxHp) * 10),
+    price: Math.floor((baseItem.baseValue || 10) * (rarityData.priceMultiplier || 1.0)),
     handType: baseItem.handType || '1h', // Include handType for weapons
     baseAttackInterval: baseItem.baseAttackInterval, // Include base attack interval for weapons
     prefixes: [],
@@ -394,7 +203,7 @@ function generateRandomItemForZone(allowedRarities) {
     critDamage: baseItem.critDamage,
     dodge: baseItem.dodge,
     blockChance: baseItem.blockChance,
-    price: Math.floor((baseItem.attack + baseItem.maxHp) * 10),
+    price: Math.floor((baseItem.baseValue || 10) * (rarityData.priceMultiplier || 1.0)),
     handType: baseItem.handType || '1h',
     baseAttackInterval: baseItem.baseAttackInterval,
     prefixes: [],
@@ -797,10 +606,10 @@ class GameState {
       inventory: []
     };
     
-    this.currentZone = 'forest';
-    this.currentEnemy = null;
-    this.unlockedZones = ['forest', 'town']; // Only starting zones unlocked
-    this.needsInventoryUpdate = true;
+  this.currentZone = 'basement';
+  this.currentEnemy = null;
+  this.unlockedZones = ['basement', 'town', 'restArea']; // Ensure basement is always the first zone
+  this.needsInventoryUpdate = true;
     this.needsCharacterUpdate = true;
     this.respawnTimer = {
       isActive: false,
@@ -828,6 +637,19 @@ class GameState {
     // Activity log system
     this.activityLog = [];
     this.logFilter = 'all'; // 'all', 'combat', 'shop', 'system'
+    
+    // Passive systems for Knowledge talents
+    this.passiveSystems = {
+      studyHabits: {
+        lastTick: 0,
+        interval: 60000 // 60 seconds
+      },
+      passiveLearning: {
+        lastTick: 0,
+        interval: 1000 // 1 second
+      },
+      enemyCounter: 0 // For Experience Burst talent
+    };
     
     // Inventory management settings
     this.inventorySettings = {
@@ -887,17 +709,29 @@ class GameState {
     
     // Apply talent bonuses to base stats
     const powerLevel1 = this.getTalentLevel('power', 'power_1');
-    const powerLevel2 = this.getTalentLevel('power', 'power_2');
-    const powerLevel3 = this.getTalentLevel('power', 'power_3');
+    const powerLevel2a = this.getTalentLevel('power', 'power_2a'); // Weapon Mastery
+    const powerLevel2b = this.getTalentLevel('power', 'power_2b'); // Combat Mastery
+    const powerLevel3a = this.getTalentLevel('power', 'power_3a'); // Berserker Rage
+    const powerLevel3b = this.getTalentLevel('power', 'power_3b'); // Precise Strikes
+    const powerLevel3c = this.getTalentLevel('power', 'power_3c'); // Battle Focus
     const powerLevel4 = this.getTalentLevel('power', 'power_4');
     
     totalAttack += powerLevel1 * 5; // +5 attack per level
-    let talentCritChance = powerLevel2 * 2; // +2% crit per level
-    let talentAttackSpeed = powerLevel3 * 10; // +10% attack speed per level
+    let talentCritChance = powerLevel2b * 2; // +2% crit per level
+    let talentCritDamage = powerLevel3b * 15; // +15% crit damage per level
+    let talentAttackSpeed = powerLevel3a * 10; // +10% attack speed per level
+    let talentDodge = powerLevel3c * 5; // +5% dodge per level
+    let talentBlockChance = powerLevel3c * 3; // +3% block per level
+    
+    // Weapon Mastery: +10% weapon damage per level
+    if (powerLevel2a > 0) {
+      totalAttack *= (1 + (powerLevel2a * 0.10));
+    }
     
     if (powerLevel4 > 0) {
       totalAttack *= 1.5; // +50% damage
       talentCritChance += 25; // +25% crit chance
+      talentAttackSpeed += 20; // +20% attack speed (additional)
     }
     
     for (const slot in this.player.equipment) {
@@ -922,9 +756,9 @@ class GameState {
     this.player.equipmentMaxHp = equipmentMaxHp;
     this.player.attackSpeed = equipmentAttackSpeed + talentAttackSpeed;
     this.player.critChance = equipmentCritChance + talentCritChance;
-    this.player.critDamage = equipmentCritDamage;
-    this.player.dodge = equipmentDodge;
-    this.player.blockChance = equipmentBlockChance;
+    this.player.critDamage = equipmentCritDamage + talentCritDamage;
+    this.player.dodge = equipmentDodge + talentDodge;
+    this.player.blockChance = equipmentBlockChance + talentBlockChance;
     
     // Ensure current HP doesn't exceed max HP
     if (this.player.hp > this.player.maxHp) {
@@ -959,7 +793,7 @@ class GameState {
   }
   
   sellItem(item, showMessage = true) {
-    const sellPrice = Math.floor((item.price || 10) * 0.5); // Sell for 50% of buy price
+    const sellPrice = Math.floor((item.price !== undefined ? item.price : 10) * 0.5); // Sell for 50% of buy price
     this.player.gold += sellPrice;
     
     if (showMessage) {
@@ -1152,11 +986,11 @@ class GameState {
   gainXp(amount) {
     // Apply knowledge talent bonuses
     const knowledgeLevel1 = this.getTalentLevel('knowledge', 'knowledge_1');
-    const knowledgeLevel2 = this.getTalentLevel('knowledge', 'knowledge_2');
+    const knowledgeLevel2a = this.getTalentLevel('knowledge', 'knowledge_2a'); // Battle Wisdom
     const knowledgeLevel4 = this.getTalentLevel('knowledge', 'knowledge_4');
     
     let xpBonus = 1 + (knowledgeLevel1 * 0.2); // +20% per level
-    xpBonus += knowledgeLevel2 * 0.5; // +50% bonus per level
+    xpBonus += knowledgeLevel2a * 0.5; // +50% bonus per level
     
     if (knowledgeLevel4 > 0) {
       xpBonus *= 3; // Triple XP gain
@@ -1175,8 +1009,8 @@ class GameState {
     this.player.level++;
     
     // Calculate next level XP with knowledge talent reduction
-    const knowledgeLevel3 = this.getTalentLevel('knowledge', 'knowledge_3');
-    const xpReduction = Math.min(0.3, knowledgeLevel3 * 0.1); // Max 30% reduction
+    const knowledgeLevel3a = this.getTalentLevel('knowledge', 'knowledge_3a'); // Master Scholar
+    const xpReduction = Math.min(0.3, knowledgeLevel3a * 0.1); // Max 30% reduction
     
     this.player.nextLevelXp = Math.floor(this.player.nextLevelXp * 1.2 * (1 - xpReduction));
     
@@ -1270,8 +1104,8 @@ class GameState {
     if (saveData) {
       const data = JSON.parse(saveData);
       this.player = { ...this.player, ...data.player };
-      this.currentZone = data.currentZone || 'forest';
-      this.unlockedZones = data.unlockedZones || ['forest']; // Default to forest only if no save data
+  this.currentZone = data.currentZone || 'basement';
+      this.unlockedZones = data.unlockedZones || ['basement']; // Default to basement only if no save data
       
       // Fix character items that might be missing the 'type' property (from older saves)
       Object.keys(this.player.equipment).forEach(slot => {
@@ -1349,6 +1183,38 @@ class GameState {
       this.respawnTimer.isActive = false;
       this.respawnTimer.currentTime = 0;
       startCombat();
+    }
+  }
+  
+  updatePassiveSystems(currentTime) {
+    // Study Habits: Gain bonus XP equal to 5% of current level every 60 seconds
+    const studyHabitsLevel = this.getTalentLevel('knowledge', 'knowledge_2b');
+    if (studyHabitsLevel > 0) {
+      if (currentTime - this.passiveSystems.studyHabits.lastTick >= this.passiveSystems.studyHabits.interval) {
+        const bonusXp = Math.floor(this.player.level * 0.05 * studyHabitsLevel);
+        if (bonusXp > 0) {
+          this.gainXp(bonusXp);
+          this.addLogMessage(`Study Habits: Gained ${bonusXp} bonus XP from passive learning!`, 'system', 'passive-xp');
+        }
+        this.passiveSystems.studyHabits.lastTick = currentTime;
+      }
+    }
+    
+    // Passive Learning: Gain XP over time even when not fighting
+    const passiveLearningLevel = this.getTalentLevel('knowledge', 'knowledge_3c');
+    if (passiveLearningLevel > 0) {
+      if (currentTime - this.passiveSystems.passiveLearning.lastTick >= this.passiveSystems.passiveLearning.interval) {
+        const baseXpPerSecond = 1; // Base 1 XP per second
+        const bonusXp = Math.floor(baseXpPerSecond * passiveLearningLevel);
+        if (bonusXp > 0) {
+          this.gainXp(bonusXp);
+          // Don't spam log for passive learning, only log every 30 seconds
+          if ((currentTime - this.passiveSystems.passiveLearning.lastTick) % 30000 < 1000) {
+            this.addLogMessage(`Passive Learning: Gained ${bonusXp * 30} XP over the last 30 seconds!`, 'system', 'passive-xp');
+          }
+        }
+        this.passiveSystems.passiveLearning.lastTick = currentTime;
+      }
     }
   }
   
@@ -1528,6 +1394,9 @@ class GameState {
   }
   
   handleEnemyDefeat() {
+    // Increment enemy counter for Experience Burst
+    this.passiveSystems.enemyCounter++;
+    
     // Variable gold drop between 10% and 100% of base gold
     const baseGold = this.currentEnemy.gold;
     const goldMultiplier = 0.1 + (Math.random() * 0.9); // 0.1 to 1.0
@@ -1537,8 +1406,21 @@ class GameState {
     // Apply wealth talent bonuses to gold
     goldGained = Math.floor(goldGained * this.getGoldMultiplier());
     
-    // Apply experience multiplier to XP
-    xpGained = Math.floor(xpGained * this.getExperienceMultiplier());
+    // Zone Master: Gain 15% more XP and gold from all zones
+    const zoneMasterLevel = this.getTalentLevel('exploration', 'exploration_2b');
+    const zoneMasterMultiplier = 1 + (zoneMasterLevel * 0.15);
+    goldGained = Math.floor(goldGained * zoneMasterMultiplier);
+    
+    // Experience Burst: Every 10th enemy gives 5x experience
+    const experienceBurstLevel = this.getTalentLevel('knowledge', 'knowledge_3b');
+    let experienceBurstMultiplier = 1;
+    if (experienceBurstLevel > 0 && this.passiveSystems.enemyCounter % 10 === 0) {
+      experienceBurstMultiplier = 5 * experienceBurstLevel; // 5x per level
+      this.addLogMessage(`🌟 Experience Burst! ${experienceBurstMultiplier}x XP bonus on this kill!`, 'loot', 'experience-burst');
+    }
+    
+    // Apply experience multiplier to XP (including Zone Master bonus)
+    xpGained = Math.floor(xpGained * this.getExperienceMultiplier() * experienceBurstMultiplier * zoneMasterMultiplier);
     
     this.player.gold += goldGained;
     this.gainXp(xpGained);
@@ -1634,14 +1516,14 @@ class GameState {
   }
 
   getBaseAttackSpeedWithTalents() {
-    const powerLevel3 = this.getTalentLevel('power', 'power_3');
-    return powerLevel3 * 10; // +10% attack speed per level of Berserker Rage
+    const powerLevel3a = this.getTalentLevel('power', 'power_3a'); // Berserker Rage
+    return powerLevel3a * 10; // +10% attack speed per level of Berserker Rage
   }
 
   getBaseCritChanceWithTalents() {
-    const powerLevel2 = this.getTalentLevel('power', 'power_2');
+    const powerLevel2b = this.getTalentLevel('power', 'power_2b'); // Combat Mastery
     const powerLevel4 = this.getTalentLevel('power', 'power_4');
-    let baseCrit = powerLevel2 * 2; // +2% crit per level of Combat Mastery
+    let baseCrit = powerLevel2b * 2; // +2% crit per level of Combat Mastery
     if (powerLevel4 > 0) {
       baseCrit += 25; // +25% crit chance from Legendary Warrior
     }
@@ -1669,14 +1551,14 @@ class GameState {
     
     // Knowledge talents
     const knowledgeLevel1 = this.getTalentLevel('knowledge', 'knowledge_1');
-    const knowledgeLevel2 = this.getTalentLevel('knowledge', 'knowledge_2');
+    const knowledgeLevel2a = this.getTalentLevel('knowledge', 'knowledge_2a'); // Battle Wisdom
     const knowledgeLevel4 = this.getTalentLevel('knowledge', 'knowledge_4');
     
     // Quick Learner: +20% experience gain per level
     multiplier += (knowledgeLevel1 * 0.20);
     
     // Battle Wisdom: +50% bonus XP from combat victories per level
-    multiplier += (knowledgeLevel2 * 0.50);
+    multiplier += (knowledgeLevel2a * 0.50);
     
     // Enlightened One: Triple XP gain
     if (knowledgeLevel4 > 0) {
@@ -1708,11 +1590,11 @@ class GameState {
     let multiplier = 1.0; // Base multiplier
     
     // Wealth talents
-    const wealthLevel2 = this.getTalentLevel('wealth', 'wealth_2');
+    const wealthLevel2a = this.getTalentLevel('wealth', 'wealth_2a'); // Lucky Find
     const wealthLevel4 = this.getTalentLevel('wealth', 'wealth_4');
     
     // Lucky Find: +10% item drop chance per level
-    multiplier += (wealthLevel2 * 0.10);
+    multiplier += (wealthLevel2a * 0.10);
     
     // Golden Touch: +50% item drops
     if (wealthLevel4 > 0) {
@@ -1731,7 +1613,14 @@ class GameState {
     const currentLevel = this.getTalentLevel(pathwayName, talentId);
     if (currentLevel >= talent.maxLevel) return false;
     
-    const totalCost = talent.cost * (currentLevel + 1);
+    let totalCost = talent.cost * (currentLevel + 1);
+    
+    // Enlightened One: Gain talent points 50% faster (50% cost reduction)
+    const enlightenedOneLevel = this.getTalentLevel('knowledge', 'knowledge_4');
+    if (enlightenedOneLevel > 0) {
+      totalCost = Math.floor(totalCost * 0.5); // 50% cost reduction
+    }
+    
     if (this.player.gold < totalCost) return false;
     
     // Check prerequisites
@@ -1750,7 +1639,13 @@ class GameState {
     const pathway = TALENT_TREES[pathwayName];
     const talent = pathway.nodes.find(node => node.id === talentId);
     const currentLevel = this.getTalentLevel(pathwayName, talentId);
-    const cost = talent.cost * (currentLevel + 1);
+    let cost = talent.cost * (currentLevel + 1);
+    
+    // Enlightened One: Gain talent points 50% faster (50% cost reduction)
+    const enlightenedOneLevel = this.getTalentLevel('knowledge', 'knowledge_4');
+    if (enlightenedOneLevel > 0) {
+      cost = Math.floor(cost * 0.5); // 50% cost reduction
+    }
     
     this.player.gold -= cost;
     this.talents[pathwayName][talentId] = currentLevel + 1;
@@ -1773,8 +1668,12 @@ class GameState {
     // Store current gold for talent allocation
     const currentGold = this.player.gold;
     
+    // Check for Enlightened One talent for starting level bonus
+    const enlightenedOneLevel = this.getTalentLevel('knowledge', 'knowledge_4');
+    const startingLevel = enlightenedOneLevel > 0 ? 5 : 1;
+    
     // Reset player stats
-    this.player.level = 1;
+    this.player.level = startingLevel;
     this.player.hp = this.getBaseMaxHpWithTalents();
     this.player.maxHp = this.getBaseMaxHpWithTalents();
     this.player.attack = 10;
@@ -1790,6 +1689,16 @@ class GameState {
     this.player.xp = 0;
     this.player.nextLevelXp = 100;
     
+    // If starting at level 5, adjust stats and XP requirements accordingly
+    if (startingLevel > 1) {
+      for (let i = 1; i < startingLevel; i++) {
+        this.player.maxHp += 10;
+        this.player.nextLevelXp = Math.floor(this.player.nextLevelXp * 1.2);
+      }
+      this.player.hp = this.player.maxHp;
+      this.addLogMessage(`🌟 Enlightened One: Starting at level ${startingLevel}!`, 'system', 'enlightened-start');
+    }
+    
     // Clear inventory and equipment (except starting weapon)
     this.player.inventory = [];
     this.player.equipment = {
@@ -1804,6 +1713,7 @@ class GameState {
         critDamage: 0,
         dodge: 0,
         blockChance: 0,
+        price: 0, // Rusty Sword sells for 0 gold
         baseAttackInterval: 2500
       },
       offhand: null,
@@ -1816,9 +1726,9 @@ class GameState {
       ring: null
     };
     
-    // Reset zones (except starting zone)
-    this.unlockedZones = ['forest'];
-    this.currentZone = 'forest';
+    // Reset zones (except starting zones)
+    this.unlockedZones = ['basement', 'restArea'];
+    this.currentZone = 'basement';
     this.currentEnemy = null;
     
     // Reset combat state
@@ -2498,7 +2408,7 @@ function updateInventory() {
     const rarityColor = item.rarity && ITEM_RARITIES[item.rarity] ? ITEM_RARITIES[item.rarity].color : '#9CA3AF';
     
     // Add sell price for tooltip use
-    const sellPrice = Math.floor((item.price || 10) * 0.5);
+    const sellPrice = Math.floor((item.price !== undefined ? item.price : 10) * 0.5);
     
     itemDiv.innerHTML = `
       <div class="item-icon">${getGearIcon(item)}</div>
@@ -2533,27 +2443,8 @@ function updateInventory() {
       e.preventDefault();
       e.stopPropagation();
       
-      // Check if shift key is held for selling
+      // Check if shift key is held for equipping
       if (e.shiftKey) {
-        // Sell item
-        const itemIndex = parseInt(itemDiv.getAttribute('data-item-index'));
-        const itemToSell = game.player.inventory[itemIndex];
-        
-        if (itemToSell && itemIndex >= 0 && itemIndex < game.player.inventory.length) {
-          game.sellItem(itemToSell);
-          game.player.inventory.splice(itemIndex, 1);
-          game.needsInventoryUpdate = true;
-          
-          // Hide tooltip since item is being removed
-          hideInventoryTooltip();
-          
-          // Add visual feedback
-          itemDiv.classList.add('selling');
-          setTimeout(() => {
-            updateUI();
-          }, 300);
-        }
-      } else {
         // Equip item
         const itemIndex = parseInt(itemDiv.getAttribute('data-item-index'));
         const itemToEquip = game.player.inventory[itemIndex];
@@ -2571,6 +2462,25 @@ function updateInventory() {
           
           // Add visual feedback
           itemDiv.classList.add('equipping');
+          setTimeout(() => {
+            updateUI();
+          }, 300);
+        }
+      } else {
+        // Sell item
+        const itemIndex = parseInt(itemDiv.getAttribute('data-item-index'));
+        const itemToSell = game.player.inventory[itemIndex];
+        
+        if (itemToSell && itemIndex >= 0 && itemIndex < game.player.inventory.length) {
+          game.sellItem(itemToSell);
+          game.player.inventory.splice(itemIndex, 1);
+          game.needsInventoryUpdate = true;
+          
+          // Hide tooltip since item is being removed
+          hideInventoryTooltip();
+          
+          // Add visual feedback
+          itemDiv.classList.add('selling');
           setTimeout(() => {
             updateUI();
           }, 300);
@@ -2674,7 +2584,7 @@ function updateShop() {
 
 // Combat System
 function startCombat() {
-  if (game.currentZone === 'town') return;
+  if (game.currentZone === 'town' || game.currentZone === 'restArea') return;
   
   if (!game.currentEnemy) {
     game.currentEnemy = game.spawnEnemy();
@@ -2737,31 +2647,72 @@ function hideTalentTree() {
   game.ascend();
   
   // Send player to starting zone
-  changeZone('forest');
+  changeZone('basement');
   updateUI();
 }
 
 function populateTalentTree() {
-  Object.keys(TALENT_TREES).forEach(pathwayName => {
-    const pathway = TALENT_TREES[pathwayName];
-    const pathwayElement = document.getElementById(`pathway-${pathwayName}`);
-    
-    if (!pathwayElement) return;
-    
-    // Update talent nodes only (header is now static)
-    const nodesContainer = pathwayElement.querySelector('.talent-nodes');
-    if (nodesContainer) {
-      nodesContainer.innerHTML = '';
+  // Use setTimeout to ensure DOM is fully rendered
+  setTimeout(() => {
+    Object.keys(TALENT_TREES).forEach(pathwayName => {
+      const pathway = TALENT_TREES[pathwayName];
+      const pathwayElement = document.getElementById(`pathway-${pathwayName}`);
       
+      if (!pathwayElement) return;
+      
+      // Get containers - try both selectors
+      let nodesContainer = pathwayElement.querySelector('.talent-nodes-container');
+      let connectionsContainer = pathwayElement.querySelector('.talent-connections');
+      
+      // Fallback to ID-based selectors if class-based ones don't work
+      if (!nodesContainer) {
+        nodesContainer = document.getElementById(`${pathwayName}-nodes`);
+      }
+      if (!connectionsContainer) {
+        connectionsContainer = document.getElementById(`${pathwayName}-connections`);
+      }
+      
+      if (!nodesContainer || !connectionsContainer) return;
+      
+      // Clear existing content
+      nodesContainer.innerHTML = '';
+      connectionsContainer.innerHTML = '';
+      
+      // Calculate grid dimensions with fallbacks
+      const gridWidth = nodesContainer.clientWidth || 180;
+      const gridHeight = nodesContainer.clientHeight || 350;
+      const nodeSize = 60;
+      
+      // Get max grid coordinates to normalize positions
+      const maxX = Math.max(...pathway.nodes.map(n => n.position.x));
+      const maxY = Math.max(...pathway.nodes.map(n => n.position.y));
+      
+      if (maxX === 0 || maxY === 0) return;
+      
+      // Create talent nodes
+      const nodePositions = {};
       pathway.nodes.forEach(talent => {
         const currentLevel = game.getTalentLevel(pathwayName, talent.id);
         const canAllocate = game.canAllocateTalent(pathwayName, talent.id);
-        const nextCost = talent.cost * (currentLevel + 1);
+        let nextCost = talent.cost * (currentLevel + 1);
+        
+        // Apply Enlightened One cost reduction for display
+        const enlightenedOneLevel = game.getTalentLevel('knowledge', 'knowledge_4');
+        if (enlightenedOneLevel > 0) {
+          nextCost = Math.floor(nextCost * 0.5);
+        }
+        
+        // Calculate absolute position
+        const x = (talent.position.x / maxX) * (gridWidth - nodeSize) + nodeSize/2;
+        const y = (talent.position.y / maxY) * (gridHeight - nodeSize) + nodeSize/2;
+        nodePositions[talent.id] = { x, y };
         
         const nodeElement = document.createElement('div');
-        nodeElement.className = `talent-node ${currentLevel > 0 ? 'allocated' : ''} ${canAllocate ? 'available' : 'locked'}`;
+        nodeElement.className = `talent-node tier-${talent.tier} ${currentLevel > 0 ? 'allocated' : ''} ${canAllocate ? 'available' : 'locked'}`;
         nodeElement.dataset.pathway = pathwayName;
         nodeElement.dataset.talent = talent.id;
+        nodeElement.style.left = `${x}px`;
+        nodeElement.style.top = `${y}px`;
         
         nodeElement.innerHTML = `
           ${currentLevel > 0 ? `<div class="purchase-counter">${currentLevel}</div>` : ''}
@@ -2790,8 +2741,42 @@ function populateTalentTree() {
         
         nodesContainer.appendChild(nodeElement);
       });
-    }
-  });
+      
+      // Draw connection lines
+      pathway.nodes.forEach(talent => {
+        if (talent.prerequisites && talent.prerequisites.length > 0) {
+          talent.prerequisites.forEach(prereqId => {
+            const prereqNode = pathway.nodes.find(n => n.id === prereqId);
+            if (prereqNode && nodePositions[talent.id] && nodePositions[prereqId]) {
+              drawConnection(
+                connectionsContainer,
+                nodePositions[prereqId],
+                nodePositions[talent.id],
+                game.getTalentLevel(pathwayName, prereqId) > 0,
+                game.canAllocateTalent(pathwayName, talent.id)
+              );
+            }
+          });
+        }
+      });
+    });
+  }, 100);
+}
+
+function drawConnection(svgContainer, fromPos, toPos, isActive, isAvailable) {
+  const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  line.setAttribute('x1', fromPos.x);
+  line.setAttribute('y1', fromPos.y);
+  line.setAttribute('x2', toPos.x);
+  line.setAttribute('y2', toPos.y);
+  
+  // Use setAttribute for SVG class instead of className
+  let classNames = 'talent-connection-line';
+  if (isActive) classNames += ' active';
+  if (isAvailable) classNames += ' available';
+  line.setAttribute('class', classNames);
+  
+  svgContainer.appendChild(line);
 }
 
 function updateTalentTreeUI() {
@@ -3047,6 +3032,11 @@ function changeZone(zoneName) {
         clearInterval(healInterval);
       }
     }, 1000);
+  } else if (zoneName === 'restArea') {
+    combatArea.style.display = 'grid';
+    shopArea.style.display = 'none';
+    game.addLogMessage(`${game.zones[zoneName].name} - ${game.zones[zoneName].description}`, 'system');
+    // Don't start combat or healing - just a peaceful pause area
   } else {
     combatArea.style.display = 'grid';
     shopArea.style.display = 'none';
@@ -3063,6 +3053,7 @@ function initializeZones() {
   
   // Define unlock conditions
   const unlockConditions = {
+    'forest': { level: 2, message: 'The Dark Forest path has opened!' },
     'cave': { level: 5, message: 'The Mysterious Cave is now accessible!' },
     'goblinCave': { level: 8, message: 'You discovered the Goblin Cave!' },
     'mountain': { level: 12, message: 'The Snowy Mountains path has opened!' },
@@ -3141,6 +3132,7 @@ function initializeZones() {
 function refreshZoneTooltips() {
   // Define unlock conditions (same as in initializeZones)
   const unlockConditions = {
+    'forest': { level: 2, message: 'The Dark Forest path has opened!' },
     'cave': { level: 5, message: 'The Mysterious Cave is now accessible!' },
     'goblinCave': { level: 8, message: 'You discovered the Goblin Cave!' },
     'mountain': { level: 12, message: 'The Snowy Mountains path has opened!' },
@@ -3208,6 +3200,7 @@ function checkZoneUnlocks() {
   
   // Unlock conditions for each zone
   const unlockConditions = {
+    'forest': { level: 2, message: 'The Dark Forest path has opened!' },
     'cave': { level: 5, message: 'The Mysterious Cave is now accessible!' },
     'goblinCave': { level: 8, message: 'You discovered the Goblin Cave!' },
     'mountain': { level: 12, message: 'The Snowy Mountains path has opened!' },
@@ -3390,13 +3383,16 @@ function gameLoop(currentTime = performance.now()) {
   const deltaTime = currentTime - lastFrameTime;
   lastFrameTime = currentTime;
   
+  // Update passive systems for Knowledge talents
+  game.updatePassiveSystems(currentTime);
+  
   // Update attack bars every frame when combat is active
-  if (game.combat.isActive && game.currentEnemy && game.currentZone !== 'town') {
+  if (game.combat.isActive && game.currentEnemy && game.currentZone !== 'town' && game.currentZone !== 'restArea') {
     game.updateAttackBars(deltaTime);
   }
   
   // Update respawn timer when active
-  if (game.respawnTimer.isActive && game.currentZone !== 'town') {
+  if (game.respawnTimer.isActive && game.currentZone !== 'town' && game.currentZone !== 'restArea') {
     game.updateRespawnTimer(deltaTime);
   }
   
@@ -3414,7 +3410,7 @@ function initGame() {
   game.calculateStats();
   checkZoneUnlocks(); // Unlock zones based on level (especially for testing level 100)
   initializeZones();
-  changeZone('forest');
+  changeZone('basement');
   
   // Initialize the end run button text
   updateEndRunButton();
@@ -3811,9 +3807,9 @@ function showInventoryTooltip(event, item, showComparison = false) {
     comparisonHtml += `<div class="tooltip-comparison">No ${item.type} equipped</div>`;
   }
   
-  // Add sell information at the bottom
-  const sellPrice = Math.floor((item.price || 10) * 0.5);
-  comparisonHtml += `<div class="tooltip-sell-info">Right-click to sell for ${sellPrice} gold</div>`;
+  // Add interaction information at the bottom
+  const sellPrice = Math.floor((item.price !== undefined ? item.price : 10) * 0.5);
+  comparisonHtml += `<div class="tooltip-sell-info">Click/Right-click to sell for ${sellPrice} gold • Shift+Click to equip</div>`;
   
   tooltip.innerHTML = comparisonHtml;
   tooltip.style.display = 'block';
@@ -4111,7 +4107,7 @@ function showStatsTooltip(event, statType) {
     } else if (statType === 'xp-multiplier') {
       const baseMultiplier = 1.0;
       const knowledgeLevel1 = game.getTalentLevel('knowledge', 'knowledge_1');
-      const knowledgeLevel2 = game.getTalentLevel('knowledge', 'knowledge_2');
+      const knowledgeLevel2a = game.getTalentLevel('knowledge', 'knowledge_2a');
       const knowledgeLevel4 = game.getTalentLevel('knowledge', 'knowledge_4');
       const totalMultiplier = game.getExperienceMultiplier();
       
@@ -4127,10 +4123,10 @@ function showStatsTooltip(event, statType) {
           <span class="stat-breakdown-value">+${(knowledgeLevel1 * 0.20).toFixed(2)}x</span>
         </div>
         ` : ''}
-        ${knowledgeLevel2 > 0 ? `
+        ${knowledgeLevel2a > 0 ? `
         <div class="stat-breakdown-item">
-          <span>Battle Wisdom (Lv${knowledgeLevel2}):</span>
-          <span class="stat-breakdown-value">+${(knowledgeLevel2 * 0.50).toFixed(2)}x</span>
+          <span>Battle Wisdom (Lv${knowledgeLevel2a}):</span>
+          <span class="stat-breakdown-value">+${(knowledgeLevel2a * 0.50).toFixed(2)}x</span>
         </div>
         ` : ''}
         ${knowledgeLevel4 > 0 ? `
@@ -4175,7 +4171,7 @@ function showStatsTooltip(event, statType) {
       `;
     } else if (statType === 'item-drop-chance') {
       const baseChance = 25;
-      const wealthLevel2 = game.getTalentLevel('wealth', 'wealth_2');
+      const wealthLevel2a = game.getTalentLevel('wealth', 'wealth_2a');
       const wealthLevel4 = game.getTalentLevel('wealth', 'wealth_4');
       const totalMultiplier = game.getItemDropMultiplier();
       const totalBonus = (totalMultiplier - 1) * 100;
@@ -4186,10 +4182,10 @@ function showStatsTooltip(event, statType) {
           <span>Base Drop Chance:</span>
           <span class="stat-breakdown-value">${baseChance}%</span>
         </div>
-        ${wealthLevel2 > 0 ? `
+        ${wealthLevel2a > 0 ? `
         <div class="stat-breakdown-item">
-          <span>Lucky Find (Lv${wealthLevel2}):</span>
-          <span class="stat-breakdown-value">+${(wealthLevel2 * 10).toFixed(0)}%</span>
+          <span>Lucky Find (Lv${wealthLevel2a}):</span>
+          <span class="stat-breakdown-value">+${(wealthLevel2a * 10).toFixed(0)}%</span>
         </div>
         ` : ''}
         ${wealthLevel4 > 0 ? `

@@ -7,6 +7,23 @@ export const ZONES = {
     enemies: [],
     isShop: true
   },
+  restArea: {
+    name: '🏕️ Rest Area',
+    description: 'A peaceful campsite where you can pause and relax. Nothing happens here.',
+    enemies: [],
+    isRestArea: true
+  },
+  basement: {
+    name: '🏠 The Basement',
+    description: 'A damp, dark basement infested with weak rats. Perfect for beginners.',
+    enemies: [
+      { name: 'Sewer Rat', imageClass: 'sewer-rat', hp: 25, attack: 2, xp: 8, gold: 2, attackInterval: 3500 },
+      { name: 'Giant Rat', imageClass: 'giant-rat', hp: 35, attack: 3, xp: 12, gold: 3, attackInterval: 3000 },
+      { name: 'Diseased Rat', imageClass: 'diseased-rat', hp: 30, attack: 4, xp: 10, gold: 3, attackInterval: 2800 }
+    ],
+    dropChance: 15, // 15% base drop rate - lower than other zones
+    allowedRarities: ['common'] // Only common items can drop
+  },
   forest: {
     name: '🌲 Dark Forest',
     description: 'A mysterious forest filled with creatures',

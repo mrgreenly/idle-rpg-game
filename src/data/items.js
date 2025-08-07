@@ -6,7 +6,8 @@ export const ITEM_RARITIES = {
     chance: 50,
     affixCount: 0,
     prefix: [],
-    suffix: []
+    suffix: [],
+    priceMultiplier: 1.0
   },
   uncommon: {
     name: 'Uncommon',
@@ -14,7 +15,8 @@ export const ITEM_RARITIES = {
     chance: 30,
     affixCount: 1,
     prefix: ['Sturdy', 'Sharp', 'Keen', 'Fine'],
-    suffix: ['of Power', 'of Might', 'of the Warrior']
+    suffix: ['of Power', 'of Might', 'of the Warrior'],
+    priceMultiplier: 1.5
   },
   rare: {
     name: 'Rare',
@@ -22,7 +24,8 @@ export const ITEM_RARITIES = {
     chance: 15,
     affixCount: 2,
     prefix: ['Masterwork', 'Superior', 'Enhanced', 'Reinforced'],
-    suffix: ['of the Elite', 'of Excellence', 'of the Champion', 'of Mastery']
+    suffix: ['of the Elite', 'of Excellence', 'of the Champion', 'of Mastery'],
+    priceMultiplier: 2.5
   },
   epic: {
     name: 'Epic',
@@ -30,7 +33,8 @@ export const ITEM_RARITIES = {
     chance: 4,
     affixCount: 3,
     prefix: ['Legendary', 'Ancient', 'Mythical', 'Heroic', 'Blessed', 'Cursed'],
-    suffix: ['of the Gods', 'of Legends', 'of Heroes', 'of Destiny', 'of the Void', 'of Strength']
+    suffix: ['of the Gods', 'of Legends', 'of Heroes', 'of Destiny', 'of the Void', 'of Strength'],
+    priceMultiplier: 4.0
   },
   legendary: {
     name: 'Legendary',
@@ -38,7 +42,8 @@ export const ITEM_RARITIES = {
     chance: 1,
     affixCount: 5,
     prefix: ['Divine', 'Celestial', 'Eternal', 'Transcendent', 'Omnipotent', 'Radiant'],
-    suffix: ['of the Immortals', 'of Eternity', 'of the Divine', 'of Transcendence', 'of Infinity', 'of the Cosmos']
+    suffix: ['of the Immortals', 'of Eternity', 'of the Divine', 'of Transcendence', 'of Infinity', 'of the Cosmos'],
+    priceMultiplier: 8.0
   }
 };
 
@@ -47,7 +52,8 @@ export const AFFIXES = {
   prefix: {
     // Uncommon prefixes
     'Sturdy': { 
-      stats: { maxHp: 15, blockChance: 2 },
+      stats: { maxHp: 15, blockChance: 2,
+      baseValue: 5},
       allowedTypes: ['helmet', 'body', 'legs', 'boots', 'belt', 'offhand'] // Armor only
     },
     'Sharp': { 
@@ -87,7 +93,8 @@ export const AFFIXES = {
       allowedTypes: ['weapon'] // Weapons only
     },
     'Ancient': { 
-      stats: { attack: 5, maxHp: 20, blockChance: 5 },
+      stats: { attack: 5, maxHp: 20, blockChance: 5,
+      baseValue: 6},
       allowedTypes: ['weapon', 'helmet', 'body', 'legs', 'boots', 'belt', 'offhand', 'necklace', 'ring'] // All items
     },
     'Mythical': { 
@@ -99,7 +106,8 @@ export const AFFIXES = {
       allowedTypes: ['weapon'] // Weapons only
     },
     'Blessed': { 
-      stats: { maxHp: 25, dodge: 6, blockChance: 6 },
+      stats: { maxHp: 25, dodge: 6, blockChance: 6,
+      baseValue: 25},
       allowedTypes: ['helmet', 'body', 'legs', 'boots', 'belt', 'offhand', 'necklace', 'ring'] // Armor and accessories
     },
     'Cursed': { 
@@ -129,7 +137,8 @@ export const AFFIXES = {
       allowedTypes: ['weapon', 'necklace', 'ring'] // Weapons and accessories
     },
     'Radiant': { 
-      stats: { maxHp: 50, dodge: 18, attackSpeed: 25, blockChance: 20 },
+      stats: { maxHp: 50, dodge: 18, attackSpeed: 25, blockChance: 20,
+      baseValue: 32},
       allowedTypes: ['helmet', 'body', 'legs', 'boots', 'belt', 'offhand'] // Armor only
     }
   },
@@ -144,7 +153,8 @@ export const AFFIXES = {
       allowedTypes: ['weapon'] // Weapons only
     },
     'of the Warrior': { 
-      stats: { attack: 1, maxHp: 10, blockChance: 3 },
+      stats: { attack: 1, maxHp: 10, blockChance: 3,
+      baseValue: 10},
       allowedTypes: ['weapon', 'helmet', 'body', 'legs', 'boots', 'belt', 'offhand'] // Weapons and armor
     },
     
@@ -172,7 +182,8 @@ export const AFFIXES = {
       allowedTypes: ['weapon'] // Weapons only
     },
     'of Legends': { 
-      stats: { maxHp: 30, blockChance: 12 },
+      stats: { maxHp: 30, blockChance: 12,
+      baseValue: 14},
       allowedTypes: ['helmet', 'body', 'legs', 'boots', 'belt', 'offhand', 'necklace', 'ring'] // Armor and accessories
     },
     'of Heroes': { 
@@ -194,7 +205,8 @@ export const AFFIXES = {
     
     // Legendary suffixes
     'of the Immortals': { 
-      stats: { attack: 10, maxHp: 40, blockChance: 15 },
+      stats: { attack: 10, maxHp: 40, blockChance: 15,
+      baseValue: 27},
       allowedTypes: ['weapon', 'helmet', 'body', 'legs', 'boots', 'belt', 'offhand', 'necklace', 'ring'] // All items
     },
     'of Eternity': { 
@@ -214,7 +226,8 @@ export const AFFIXES = {
       allowedTypes: ['weapon', 'necklace', 'ring'] // Weapons and accessories
     },
     'of the Cosmos': { 
-      stats: { maxHp: 60, attackSpeed: 28, blockChance: 18 },
+      stats: { maxHp: 60, attackSpeed: 28, blockChance: 18,
+      baseValue: 45},
       allowedTypes: ['helmet', 'body', 'legs', 'boots', 'belt', 'offhand', 'necklace', 'ring'] // Armor and accessories
     }
   }
@@ -234,7 +247,8 @@ export const BASE_ITEMS = {
       lifeSteal: 0, 
       dodge: 0, 
       blockChance: 0,
-      handType: '1h'
+      handType: '1h',
+      baseValue: 5
     },
     { 
       name: 'Axe', 
@@ -247,7 +261,8 @@ export const BASE_ITEMS = {
       lifeSteal: 0, 
       dodge: 0, 
       blockChance: 0,
-      handType: '1h'
+      handType: '1h',
+      baseValue: 5
     },
     { 
       name: 'Mace', 
@@ -260,7 +275,8 @@ export const BASE_ITEMS = {
       lifeSteal: 0, 
       dodge: 0, 
       blockChance: 5,
-      handType: '1h'
+      handType: '1h',
+      baseValue: 5
     },
     { 
       name: 'Dagger', 
@@ -273,7 +289,8 @@ export const BASE_ITEMS = {
       lifeSteal: 0, 
       dodge: 8, 
       blockChance: 0,
-      handType: '1h'
+      handType: '1h',
+      baseValue: 5
     },
     { 
       name: 'Staff', 
@@ -286,7 +303,8 @@ export const BASE_ITEMS = {
       lifeSteal: 0, 
       dodge: 0, 
       blockChance: 0,
-      handType: '1h'
+      handType: '1h',
+      baseValue: 5
     },
     { 
       name: 'Greatsword', 
@@ -299,7 +317,8 @@ export const BASE_ITEMS = {
       lifeSteal: 0, 
       dodge: 0, 
       blockChance: 0,
-      handType: '2h'
+      handType: '2h',
+      baseValue: 5
     },
     { 
       name: 'Battleaxe', 
@@ -312,7 +331,8 @@ export const BASE_ITEMS = {
       lifeSteal: 0, 
       dodge: 0, 
       blockChance: 0,
-      handType: '2h'
+      handType: '2h',
+      baseValue: 5
     },
     { 
       name: 'Warhammer', 
@@ -325,7 +345,8 @@ export const BASE_ITEMS = {
       lifeSteal: 0, 
       dodge: 0, 
       blockChance: 8,
-      handType: '2h'
+      handType: '2h',
+      baseValue: 5
     }
   ],
   offhand: [
@@ -338,7 +359,8 @@ export const BASE_ITEMS = {
       critDamage: 0, 
       lifeSteal: 0, 
       dodge: 5, 
-      blockChance: 15 
+      blockChance: 15,
+      baseValue: 5
     },
     { 
       name: 'Round Shield', 
@@ -349,7 +371,8 @@ export const BASE_ITEMS = {
       critDamage: 0, 
       lifeSteal: 0, 
       dodge: 0, 
-      blockChance: 20 
+      blockChance: 20,
+      baseValue: 5
     },
     { 
       name: 'Tower Shield', 
@@ -360,7 +383,8 @@ export const BASE_ITEMS = {
       critDamage: 0, 
       lifeSteal: 0, 
       dodge: -5, 
-      blockChance: 30 
+      blockChance: 30,
+      baseValue: 5
     },
     { 
       name: 'Tome', 
@@ -371,7 +395,8 @@ export const BASE_ITEMS = {
       critDamage: 0, 
       lifeSteal: 0, 
       dodge: 0, 
-      blockChance: 0 
+      blockChance: 0,
+      baseValue: 5
     }
   ],
   helmet: [
@@ -384,8 +409,8 @@ export const BASE_ITEMS = {
       critDamage: 0, 
       lifeSteal: 0, 
       dodge: 0, 
-      blockChance: 3 
-    },
+      blockChance: 3,
+      baseValue: 5},
     { 
       name: 'Cap', 
       attack: 0, 
@@ -395,8 +420,8 @@ export const BASE_ITEMS = {
       critDamage: 0, 
       lifeSteal: 0, 
       dodge: 2, 
-      blockChance: 0 
-    },
+      blockChance: 0,
+      baseValue: 5},
     { 
       name: 'Crown', 
       attack: 0, 
@@ -406,8 +431,8 @@ export const BASE_ITEMS = {
       critDamage: 5, 
       lifeSteal: 0, 
       dodge: 0, 
-      blockChance: 0 
-    },
+      blockChance: 0,
+      baseValue: 6},
     { 
       name: 'Hood', 
       attack: 0, 
@@ -417,8 +442,8 @@ export const BASE_ITEMS = {
       critDamage: 0, 
       lifeSteal: 0, 
       dodge: 5, 
-      blockChance: 0 
-    }
+      blockChance: 0,
+      baseValue: 5}
   ],
   body: [
     { 
@@ -430,7 +455,8 @@ export const BASE_ITEMS = {
       critDamage: 0, 
       lifeSteal: 0, 
       dodge: 0, 
-      blockChance: 8 
+      blockChance: 8,
+      baseValue: 5
     },
     { 
       name: 'Robe', 
@@ -441,7 +467,8 @@ export const BASE_ITEMS = {
       critDamage: 10, 
       lifeSteal: 2, 
       dodge: 0, 
-      blockChance: 0 
+      blockChance: 0,
+      baseValue: 5
     },
     { 
       name: 'Vest', 
@@ -452,7 +479,8 @@ export const BASE_ITEMS = {
       critDamage: 0, 
       lifeSteal: 0, 
       dodge: 3, 
-      blockChance: 2 
+      blockChance: 2,
+      baseValue: 5
     },
     { 
       name: 'Tunic', 
@@ -463,7 +491,8 @@ export const BASE_ITEMS = {
       critDamage: 0, 
       lifeSteal: 0, 
       dodge: 5, 
-      blockChance: 0 
+      blockChance: 0,
+      baseValue: 5
     }
   ],
   legs: [
@@ -476,7 +505,8 @@ export const BASE_ITEMS = {
       critDamage: 0, 
       lifeSteal: 0, 
       dodge: 0, 
-      blockChance: 5 
+      blockChance: 5,
+      baseValue: 5
     },
     { 
       name: 'Pants', 
@@ -487,7 +517,8 @@ export const BASE_ITEMS = {
       critDamage: 0, 
       lifeSteal: 0, 
       dodge: 3, 
-      blockChance: 0 
+      blockChance: 0,
+      baseValue: 5
     },
     { 
       name: 'Leggings', 
@@ -498,8 +529,8 @@ export const BASE_ITEMS = {
       critDamage: 0, 
       lifeSteal: 0, 
       dodge: 2, 
-      blockChance: 2 
-    },
+      blockChance: 2,
+      baseValue: 5},
     { 
       name: 'Shorts', 
       attack: 0, 
@@ -509,7 +540,8 @@ export const BASE_ITEMS = {
       critDamage: 0, 
       lifeSteal: 0, 
       dodge: 8, 
-      blockChance: 0 
+      blockChance: 0,
+      baseValue: 5
     }
   ],
   boots: [
@@ -522,7 +554,8 @@ export const BASE_ITEMS = {
       critDamage: 0, 
       lifeSteal: 0, 
       dodge: 8, 
-      blockChance: 0 
+      blockChance: 0,
+      baseValue: 5
     },
     { 
       name: 'Boots', 
@@ -533,7 +566,8 @@ export const BASE_ITEMS = {
       critDamage: 0, 
       lifeSteal: 0, 
       dodge: 5, 
-      blockChance: 0 
+      blockChance: 0,
+      baseValue: 5
     },
     { 
       name: 'Heavy Boots', 
@@ -544,7 +578,8 @@ export const BASE_ITEMS = {
       critDamage: 0, 
       lifeSteal: 0, 
       dodge: 0, 
-      blockChance: 5 
+      blockChance: 5,
+      baseValue: 5
     },
     { 
       name: 'Speed Boots', 
@@ -555,7 +590,8 @@ export const BASE_ITEMS = {
       critDamage: 0, 
       lifeSteal: 0, 
       dodge: 12, 
-      blockChance: 0 
+      blockChance: 0,
+      baseValue: 5
     }
   ],
   belt: [
@@ -568,7 +604,8 @@ export const BASE_ITEMS = {
       critDamage: 0, 
       lifeSteal: 0, 
       dodge: 0, 
-      blockChance: 0 
+      blockChance: 0,
+      baseValue: 5
     },
     { 
       name: 'Utility Belt', 
@@ -579,7 +616,8 @@ export const BASE_ITEMS = {
       critDamage: 0, 
       lifeSteal: 0, 
       dodge: 3, 
-      blockChance: 0 
+      blockChance: 0,
+      baseValue: 5
     },
     { 
       name: 'Chain Belt', 
@@ -590,7 +628,8 @@ export const BASE_ITEMS = {
       critDamage: 0, 
       lifeSteal: 0, 
       dodge: 0, 
-      blockChance: 3 
+      blockChance: 3,
+      baseValue: 5
     },
     { 
       name: 'War Belt', 
@@ -601,7 +640,8 @@ export const BASE_ITEMS = {
       critDamage: 8, 
       lifeSteal: 0, 
       dodge: 0, 
-      blockChance: 0 
+      blockChance: 0,
+      baseValue: 5
     }
   ],
   necklace: [
@@ -614,7 +654,8 @@ export const BASE_ITEMS = {
       critDamage: 15, 
       lifeSteal: 0, 
       dodge: 0, 
-      blockChance: 0 
+      blockChance: 0,
+      baseValue: 5
     },
     { 
       name: 'Pendant', 
@@ -625,7 +666,8 @@ export const BASE_ITEMS = {
       critDamage: 0, 
       lifeSteal: 5, 
       dodge: 0, 
-      blockChance: 0 
+      blockChance: 0,
+      baseValue: 5
     }
   ],
   ring: [
@@ -638,7 +680,8 @@ export const BASE_ITEMS = {
       critDamage: 8, 
       lifeSteal: 0, 
       dodge: 0, 
-      blockChance: 0 
+      blockChance: 0,
+      baseValue: 5
     },
     { 
       name: 'Bracelet', 
@@ -649,7 +692,8 @@ export const BASE_ITEMS = {
       critDamage: 0, 
       lifeSteal: 0, 
       dodge: 0, 
-      blockChance: 0 
+      blockChance: 0,
+      baseValue: 5
     }
   ]
 };
