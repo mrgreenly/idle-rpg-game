@@ -187,6 +187,7 @@ body {
   cursor: not-allowed;
   opacity: 0.6;
   position: relative;
+  padding-right: 35px; /* Add extra padding to make room for lock icon */
 }
 
 .zone-btn.locked:hover {
@@ -199,9 +200,10 @@ body {
   content: '🔒';
   position: absolute;
   top: 50%;
-  right: 8px;
+  right: 10px;
   transform: translateY(-50%);
-  font-size: 0.8rem;
+  font-size: 0.9rem;
+  pointer-events: none;
 }
 
 /* Kill Counter Styles */

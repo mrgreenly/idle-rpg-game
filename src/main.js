@@ -194,6 +194,30 @@ let isShiftPressed = false;
 let currentTooltipItem = null;
 let currentTooltipEvent = null;
 
+// Function to destroy all tooltips
+function destroyAllTooltips() {
+  // Clear global tooltip state
+  currentTooltipItem = null;
+  currentTooltipEvent = null;
+  
+  // Hide all equipment slot tooltips
+  const tooltipSlots = ['weapon', 'helmet', 'body', 'legs', 'accessory1', 'accessory2'];
+  tooltipSlots.forEach(slot => {
+    const tooltipElement = document.getElementById(`${slot}-tooltip`);
+    if (tooltipElement) {
+      tooltipElement.innerHTML = '';
+      tooltipElement.style.display = 'none';
+    }
+  });
+  
+  // Hide any other visible tooltips by class
+  const allTooltips = document.querySelectorAll('.tooltip, .zone-tooltip, .stat-tooltip');
+  allTooltips.forEach(tooltip => {
+    tooltip.style.display = 'none';
+    tooltip.innerHTML = '';
+  });
+}
+
 function generateRandomItem() {
   // Determine rarity (excluding legendary for regular monster drops)
   const regularRarities = {
@@ -229,14 +253,13 @@ function generateRandomItem() {
     type: selectedType,
     rarity: selectedRarity,
     attack: baseItem.attack,
-    defense: baseItem.defense,
+    maxHp: baseItem.maxHp,
     attackSpeed: baseItem.attackSpeed,
     critChance: baseItem.critChance,
     critDamage: baseItem.critDamage,
-    lifeSteal: baseItem.lifeSteal,
     dodge: baseItem.dodge,
     blockChance: baseItem.blockChance,
-    price: Math.floor((baseItem.attack + baseItem.defense) * 10),
+    price: Math.floor((baseItem.attack + baseItem.maxHp) * 10),
     handType: baseItem.handType || '1h', // Include handType for weapons
     baseAttackInterval: baseItem.baseAttackInterval, // Include base attack interval for weapons
     prefixes: [],
@@ -328,7 +351,7 @@ function generateRandomItemForZone(allowedRarities) {
   let cumulativeChance = 0;
   
   for (const [rarity, data] of Object.entries(zoneRarities)) {
-    cumulativeChance += data.dropChance;
+    cumulativeChance += data.chance;
     if (rarityRoll <= cumulativeChance) {
       selectedRarity = rarity;
       break;
@@ -349,14 +372,13 @@ function generateRandomItemForZone(allowedRarities) {
     type: selectedType,
     rarity: selectedRarity,
     attack: baseItem.attack,
-    defense: baseItem.defense,
+    maxHp: baseItem.maxHp,
     attackSpeed: baseItem.attackSpeed,
     critChance: baseItem.critChance,
     critDamage: baseItem.critDamage,
-    lifeSteal: baseItem.lifeSteal,
     dodge: baseItem.dodge,
     blockChance: baseItem.blockChance,
-    price: Math.floor((baseItem.attack + baseItem.defense) * 10),
+    price: Math.floor((baseItem.attack + baseItem.maxHp) * 10),
     handType: baseItem.handType || '1h',
     baseAttackInterval: baseItem.baseAttackInterval,
     prefixes: [],
@@ -446,7 +468,7 @@ function generateLegendaryItem() {
     type: selectedType,
     rarity: selectedRarity,
     attack: baseItem.attack,
-    defense: baseItem.defense,
+    maxHp: baseItem.maxHp,
     attackSpeed: baseItem.attackSpeed,
     critChance: baseItem.critChance,
     critDamage: baseItem.critDamage,
@@ -586,11 +608,10 @@ function separateItemStats(item) {
       // Calculate total affix bonuses
       const totalAffixStats = {
         attack: 0,
-        defense: 0,
+        maxHp: 0,
         attackSpeed: 0,
         critChance: 0,
         critDamage: 0,
-        lifeSteal: 0,
         dodge: 0,
         blockChance: 0
       };
@@ -627,11 +648,10 @@ function separateItemStats(item) {
       return {
         baseStats: {
           attack: (item.attack || 0) - totalAffixStats.attack,
-          defense: (item.defense || 0) - totalAffixStats.defense,
+          maxHp: (item.maxHp || 0) - totalAffixStats.maxHp,
           attackSpeed: (item.attackSpeed || 0) - totalAffixStats.attackSpeed,
           critChance: (item.critChance || 0) - totalAffixStats.critChance,
           critDamage: (item.critDamage || 0) - totalAffixStats.critDamage,
-          lifeSteal: (item.lifeSteal || 0) - totalAffixStats.lifeSteal,
           dodge: (item.dodge || 0) - totalAffixStats.dodge,
           blockChance: (item.blockChance || 0) - totalAffixStats.blockChance
         },
@@ -643,21 +663,19 @@ function separateItemStats(item) {
     return {
       baseStats: {
         attack: item.attack || 0,
-        defense: item.defense || 0,
+        maxHp: item.maxHp || 0,
         attackSpeed: item.attackSpeed || 0,
         critChance: item.critChance || 0,
         critDamage: item.critDamage || 0,
-        lifeSteal: item.lifeSteal || 0,
         dodge: item.dodge || 0,
         blockChance: item.blockChance || 0
       },
       affixStats: {
         attack: 0,
-        defense: 0,
+        maxHp: 0,
         attackSpeed: 0,
         critChance: 0,
         critDamage: 0,
-        lifeSteal: 0,
         dodge: 0,
         blockChance: 0
       }
@@ -667,11 +685,10 @@ function separateItemStats(item) {
   // Calculate affix bonuses by applying all prefixes and suffixes
   const affixStats = {
     attack: 0,
-    defense: 0,
+    maxHp: 0,
     attackSpeed: 0,
     critChance: 0,
     critDamage: 0,
-    lifeSteal: 0,
     dodge: 0,
     blockChance: 0
   };
@@ -707,11 +724,10 @@ function separateItemStats(item) {
   return {
     baseStats: {
       attack: baseTemplate.attack || 0,
-      defense: baseTemplate.defense || 0,
+      maxHp: baseTemplate.maxHp || 0,
       attackSpeed: baseTemplate.attackSpeed || 0,
       critChance: baseTemplate.critChance || 0,
       critDamage: baseTemplate.critDamage || 0,
-      lifeSteal: baseTemplate.lifeSteal || 0,
       dodge: baseTemplate.dodge || 0,
       blockChance: baseTemplate.blockChance || 0
     },
@@ -724,33 +740,30 @@ class GameState {
   constructor() {
     this.player = {
       level: 1,
-      hp: 100,
+      hp: 100, // Base HP
       maxHp: 100,
-      attack: 10,
-      defense: 5,
+      attack: 10, // Base attack
       equipmentAttack: 0,
-      equipmentDefense: 0,
+      equipmentMaxHp: 0,
       // New stats
       attackSpeed: 0,
       critChance: 0,
       critDamage: 0,
-      lifeSteal: 0,
       dodge: 0,
       blockChance: 0,
       gold: 0,
       xp: 0,
-      nextLevelXp: 100,
+      nextLevelXp: 100, // Normal XP requirement for next level
       equipment: {
         weapon: { 
           name: 'Rusty Sword', 
           type: 'weapon', 
           rarity: 'common',
           attack: 5, 
-          defense: 0, 
+          maxHp: 0, 
           attackSpeed: 0,
           critChance: 0,
           critDamage: 0,
-          lifeSteal: 0,
           dodge: 0,
           blockChance: 0,
           baseAttackInterval: 2500 // 2.5 seconds
@@ -769,7 +782,7 @@ class GameState {
     
     this.currentZone = 'forest';
     this.currentEnemy = null;
-    this.unlockedZones = ['forest']; // Start with only Dark Forest unlocked
+    this.unlockedZones = ['forest', 'town']; // Only starting zones unlocked
     this.needsInventoryUpdate = true;
     this.needsCharacterUpdate = true;
     this.respawnTimer = {
@@ -801,7 +814,7 @@ class GameState {
     
     // Inventory management settings
     this.inventorySettings = {
-      sortBy: 'name', // 'name', 'rarity', 'type', 'attack', 'defense'
+      sortBy: 'name', // 'name', 'rarity', 'type', 'attack', 'new'
       filterBy: 'all', // 'all', 'weapon', 'offhand', 'helmet', 'body', 'legs', 'boots', 'necklace', 'ring'
       autoSell: {
         enabled: false,
@@ -845,16 +858,13 @@ class GameState {
   }
   
   calculateStats() {
-    let totalAttack = 10; // Base attack
-    let totalDefense = 5; // Base defense
+    let totalAttack = this.getBaseAttackWithTalents(); // Base attack with talents
     let baseMaxHp = this.getBaseMaxHpWithTalents(); // Base max HP with talents
     let equipmentAttack = 0;
-    let equipmentDefense = 0;
     let equipmentMaxHp = 0;
     let equipmentAttackSpeed = 0;
     let equipmentCritChance = 0;
     let equipmentCritDamage = 0;
-    let equipmentLifeSteal = 0;
     let equipmentDodge = 0;
     let equipmentBlockChance = 0;
     
@@ -877,12 +887,10 @@ class GameState {
       const item = this.player.equipment[slot];
       if (item) {
         equipmentAttack += item.attack || 0;
-        equipmentDefense += item.defense || 0;
         equipmentMaxHp += item.maxHp || 0;
         equipmentAttackSpeed += item.attackSpeed || 0;
         equipmentCritChance += item.critChance || 0;
         equipmentCritDamage += item.critDamage || 0;
-        equipmentLifeSteal += item.lifeSteal || 0;
         equipmentDodge += item.dodge || 0;
         equipmentBlockChance += item.blockChance || 0;
       }
@@ -892,16 +900,19 @@ class GameState {
     const levelHpBonus = (this.player.level - 1) * 10;
     
     this.player.attack = totalAttack + equipmentAttack;
-    this.player.defense = totalDefense + equipmentDefense;
     this.player.maxHp = baseMaxHp + levelHpBonus + equipmentMaxHp;
     this.player.equipmentAttack = equipmentAttack;
-    this.player.equipmentDefense = equipmentDefense;
+    this.player.equipmentMaxHp = equipmentMaxHp;
     this.player.attackSpeed = equipmentAttackSpeed + talentAttackSpeed;
     this.player.critChance = equipmentCritChance + talentCritChance;
     this.player.critDamage = equipmentCritDamage;
-    this.player.lifeSteal = equipmentLifeSteal;
     this.player.dodge = equipmentDodge;
     this.player.blockChance = equipmentBlockChance;
+    
+    // Ensure current HP doesn't exceed max HP
+    if (this.player.hp > this.player.maxHp) {
+      this.player.hp = this.player.maxHp;
+    }
   }
   
   addToInventory(item) {
@@ -990,8 +1001,6 @@ class GameState {
           return a.type.localeCompare(b.type);
         case 'attack':
           return (b.attack || 0) - (a.attack || 0);
-        case 'defense':
-          return (b.defense || 0) - (a.defense || 0);
         case 'new':
           return (b.addedTimestamp || 0) - (a.addedTimestamp || 0); // Newest first
         case 'name':
@@ -1041,11 +1050,10 @@ class GameState {
       fullName: item.fullName || item.name,
       rarity: item.rarity,
       attack: item.attack || 0,
-      defense: item.defense || 0,
+      maxHp: item.maxHp || 0,
       attackSpeed: item.attackSpeed || 0,
       critChance: item.critChance || 0,
       critDamage: item.critDamage || 0,
-      lifeSteal: item.lifeSteal || 0,
       dodge: item.dodge || 0,
       blockChance: item.blockChance || 0,
       handType: item.handType || '1h', // Store hand type for weapons
@@ -1079,12 +1087,15 @@ class GameState {
     }
     
     this.calculateStats();
-    console.log('Stats after equipping:', { attack: this.player.attack, defense: this.player.defense });
+    console.log('Stats after equipping:', { attack: this.player.attack, maxHp: this.player.maxHp });
   }
   
   spawnEnemy() {
     const zone = this.zones[this.currentZone];
-    if (!zone.enemies || zone.enemies.length === 0) return null;
+    
+    if (!zone.enemies || zone.enemies.length === 0) {
+      return null;
+    }
     
     // Check for boss encounter in Goblin Cave
     if (this.currentZone === 'goblinCave' && zone.boss && zone.killCount >= zone.boss.requiredKills) {
@@ -1094,7 +1105,8 @@ class GameState {
       // Spawn the boss
       const boss = {
         ...zone.boss,
-        maxHp: zone.boss.hp,
+        hp: zone.boss.hp, // Current HP
+        maxHp: zone.boss.hp, // Max HP
         attackInterval: zone.boss.attackInterval || 2000,
         isBoss: true,
         isLegendaryDropper: zone.boss.isLegendaryDropper || false
@@ -1112,7 +1124,8 @@ class GameState {
     
     const enemy = {
       ...enemyTemplate,
-      maxHp: enemyTemplate.hp,
+      hp: enemyTemplate.hp, // Current HP
+      maxHp: enemyTemplate.hp, // Max HP
       attackInterval: enemyTemplate.attackInterval || 2000
     };
     
@@ -1353,9 +1366,8 @@ class GameState {
     if (!this.currentEnemy) return;
     
     // Calculate normal damage
-    let damage = Math.max(1, this.player.attack - this.currentEnemy.defense);
+    let damage = this.player.attack;
     let isCritical = false;
-    let lifeStealHealing = 0;
     
     // Check for critical hit
     if (this.player.critChance > 0) {
@@ -1391,27 +1403,10 @@ class GameState {
       createFloatingDamage(damage, enemyHpBar, 'enemy', isCritical);
     }
     
-    // Calculate life steal healing (based on damage dealt)
-    if (this.player.lifeSteal > 0) {
-      lifeStealHealing = Math.floor(damage * (this.player.lifeSteal / 100));
-      if (lifeStealHealing > 0) {
-        this.player.hp = Math.min(this.player.maxHp, this.player.hp + lifeStealHealing);
-        
-        // Create floating heal for player (on player HP bar)
-        const playerHpBar = document.getElementById('player-hp-bar');
-        if (playerHpBar) {
-          createFloatingDamage(lifeStealHealing, playerHpBar, 'player', false, false, true);
-        }
-      }
-    }
-    
     // Combat message with details
     let attackMessage = `You attack ${this.currentEnemy.name} for ${damage} damage`;
     if (isCritical) {
       attackMessage += ` (💥 CRITICAL HIT!)`;
-    }
-    if (lifeStealHealing > 0) {
-      attackMessage += ` and heal for ${lifeStealHealing} HP`;
     }
     attackMessage += '!';
     
@@ -1471,7 +1466,7 @@ class GameState {
     }
     
     // Calculate damage
-    let damage = Math.max(1, this.currentEnemy.attack - this.player.defense);
+    let damage = this.currentEnemy.attack;
     let isBlocked = false;
     
     // Check for block
@@ -1553,20 +1548,15 @@ class GameState {
       this.addToInventory(droppedItem);
     } else {
       // Use zone's drop chance and rarity restrictions
-      let dropChance = currentZone.dropChance || 30;
+      let baseDropChance = 25; // Base 25% drop chance
       const allowedRarities = currentZone.allowedRarities || ['common', 'uncommon', 'rare', 'epic'];
       
-      // Apply wealth talent bonuses
-      const wealthLevel2 = this.getTalentLevel('wealth', 'wealth_2');
-      const wealthLevel4 = this.getTalentLevel('wealth', 'wealth_4');
-      
-      dropChance += wealthLevel2 * 10; // +10% per level
-      if (wealthLevel4 > 0) {
-        dropChance += 50; // +50% item drops
-      }
+      // Apply item drop multiplier
+      const dropMultiplier = this.getItemDropMultiplier();
+      let finalDropChance = baseDropChance * dropMultiplier;
       
       const dropRoll = Math.random() * 100;
-      if (dropRoll <= dropChance) {
+      if (dropRoll <= finalDropChance) {
         droppedItem = generateRandomItemForZone(allowedRarities);
         this.addLogMessage(`${this.currentEnemy.name} dropped ${droppedItem.fullName}!`, 'loot', 'enemy-defeated');
         this.addToInventory(droppedItem);
@@ -1589,6 +1579,9 @@ class GameState {
     this.combat.isActive = false;
     this.attackBars.player.currentTime = 0;
     this.attackBars.enemy.currentTime = 0;
+    
+    // Destroy all tooltips on death
+    destroyAllTooltips();
     
     // Reset kill count on death
     if (this.currentZone === 'goblinCave') {
@@ -1615,10 +1608,6 @@ class GameState {
     const baseAttack = 10; // Original base attack
     const powerLevel1 = this.getTalentLevel('power', 'power_1');
     return baseAttack + (powerLevel1 * 5); // +5 attack per level of Warrior Training
-  }
-
-  getBaseDefenseWithTalents() {
-    return 5; // No defense talents yet, but keeping for consistency
   }
 
   getBaseMaxHpWithTalents() {
@@ -1698,6 +1687,24 @@ class GameState {
     return multiplier;
   }
 
+  getItemDropMultiplier() {
+    let multiplier = 1.0; // Base multiplier
+    
+    // Wealth talents
+    const wealthLevel2 = this.getTalentLevel('wealth', 'wealth_2');
+    const wealthLevel4 = this.getTalentLevel('wealth', 'wealth_4');
+    
+    // Lucky Find: +10% item drop chance per level
+    multiplier += (wealthLevel2 * 0.10);
+    
+    // Golden Touch: +50% item drops
+    if (wealthLevel4 > 0) {
+      multiplier += 0.50;
+    }
+    
+    return multiplier;
+  }
+
   canAllocateTalent(pathwayName, talentId) {
     const pathway = TALENT_TREES[pathwayName];
     const talent = pathway.nodes.find(node => node.id === talentId);
@@ -1754,13 +1761,12 @@ class GameState {
     this.player.hp = this.getBaseMaxHpWithTalents();
     this.player.maxHp = this.getBaseMaxHpWithTalents();
     this.player.attack = 10;
-    this.player.defense = 5;
+    this.player.maxHp = 5;
     this.player.equipmentAttack = 0;
-    this.player.equipmentDefense = 0;
+    this.player.equipmentMaxHp = 0;
     this.player.attackSpeed = 0;
     this.player.critChance = 0;
     this.player.critDamage = 0;
-    this.player.lifeSteal = 0;
     this.player.dodge = 0;
     this.player.blockChance = 0;
     // Gold is now preserved between ascensions
@@ -1775,11 +1781,10 @@ class GameState {
         type: 'weapon', 
         rarity: 'common',
         attack: 5, 
-        defense: 0, 
+        maxHp: 0, 
         attackSpeed: 0,
         critChance: 0,
         critDamage: 0,
-        lifeSteal: 0,
         dodge: 0,
         blockChance: 0,
         baseAttackInterval: 2500
@@ -1911,14 +1916,10 @@ function updateUI() {
   const playerInterval = game.getPlayerAttackInterval();
   document.getElementById('player-attack-interval').textContent = `${(playerInterval / 1000).toFixed(1)}s`;
   
-  // Update player attack and defense in combat display
+  // Update player attack in combat display
   const playerAttackElement = document.getElementById('player-attack');
-  const playerDefenseElement = document.getElementById('player-defense');
   if (playerAttackElement) {
     playerAttackElement.textContent = game.player.attack;
-  }
-  if (playerDefenseElement) {
-    playerDefenseElement.textContent = game.player.defense;
   }
   
   // Update detailed stats panel
@@ -1945,7 +1946,6 @@ function updateUI() {
   if (game.currentEnemy) {
     document.getElementById('enemy-title').textContent = game.currentEnemy.name;
     document.getElementById('enemy-attack').textContent = game.currentEnemy.attack;
-    document.getElementById('enemy-defense').textContent = game.currentEnemy.defense;
     
     // Update enemy image
     const enemyImage = document.getElementById('enemy-image');
@@ -1977,7 +1977,6 @@ function updateUI() {
     
     document.getElementById('enemy-title').textContent = `Respawning in ${timeLeft}s...`;
     document.getElementById('enemy-attack').textContent = '-';
-    document.getElementById('enemy-defense').textContent = '-';
     document.getElementById('enemy-attack-interval').textContent = '-';
     
     // Fill HP bar with muted green based on respawn progress (starts empty, fills up)
@@ -1998,7 +1997,6 @@ function updateUI() {
     // Clear enemy info when no enemy and no respawn timer
     document.getElementById('enemy-title').textContent = 'No Enemy';
     document.getElementById('enemy-attack').textContent = '-';
-    document.getElementById('enemy-defense').textContent = '-';
     document.getElementById('enemy-attack-interval').textContent = '-';
     
     const enemyHpBar = document.getElementById('enemy-hp-bar');
@@ -2084,9 +2082,8 @@ function updateUI() {
 }
 
 function updateStatsPanel() {
-  // Only update the displayed stats (total attack, total defense, max HP, actual attack speed, and advanced stats)
+  // Only update the displayed stats (total attack, max HP, actual attack speed, and advanced stats)
   document.getElementById('stats-total-attack').textContent = game.player.attack;
-  document.getElementById('stats-total-defense').textContent = game.player.defense;
   document.getElementById('stats-max-hp').textContent = game.player.maxHp;
   
   // Calculate and display actual attack speed
@@ -2096,17 +2093,16 @@ function updateStatsPanel() {
   // Update advanced stats
   document.getElementById('stats-crit-chance').textContent = `${game.player.critChance || 0}%`;
   document.getElementById('stats-crit-damage').textContent = `${game.player.critDamage || 0}%`;
-  document.getElementById('stats-life-steal').textContent = `${game.player.lifeSteal || 0}%`;
   document.getElementById('stats-dodge').textContent = `${game.player.dodge || 0}%`;
   document.getElementById('stats-block-chance').textContent = `${game.player.blockChance || 0}%`;
   
   // Update multipliers
   document.getElementById('stats-xp-multiplier').textContent = `${game.getExperienceMultiplier().toFixed(2)}x`;
   document.getElementById('stats-gold-multiplier').textContent = `${game.getGoldMultiplier().toFixed(2)}x`;
+  document.getElementById('stats-item-drop-chance').textContent = `${(25 * game.getItemDropMultiplier()).toFixed(0)}%`;
   
   // Add color coding for main stats
   const totalAttackElement = document.getElementById('stats-total-attack');
-  const totalDefenseElement = document.getElementById('stats-total-defense');
   const maxHpElement = document.getElementById('stats-max-hp');
   
   if (totalAttackElement) {
@@ -2116,19 +2112,15 @@ function updateStatsPanel() {
     }
   }
   
-  if (totalDefenseElement) {
-    totalDefenseElement.className = 'stat-value';
-    if (game.player.equipmentDefense > 0) {
-      totalDefenseElement.classList.add('positive');
+  if (maxHpElement) {
+    maxHpElement.className = 'stat-value';
+    if (game.player.equipmentMaxHp > 0) {
+      maxHpElement.classList.add('positive');
     }
   }
   
-  if (maxHpElement) {
-    maxHpElement.className = 'stat-value';
-  }
-  
   // Add color coding for advanced stats
-  const advancedStats = ['crit-chance', 'crit-damage', 'life-steal', 'dodge', 'block-chance'];
+  const advancedStats = ['crit-chance', 'crit-damage', 'dodge', 'block-chance'];
   advancedStats.forEach(stat => {
     const element = document.getElementById(`stats-${stat}`);
     if (element) {
@@ -2143,6 +2135,7 @@ function updateStatsPanel() {
   // Add color coding for multipliers
   const xpMultiplierElement = document.getElementById('stats-xp-multiplier');
   const goldMultiplierElement = document.getElementById('stats-gold-multiplier');
+  const itemDropElement = document.getElementById('stats-item-drop-chance');
   
   if (xpMultiplierElement) {
     xpMultiplierElement.className = 'stat-value';
@@ -2155,6 +2148,13 @@ function updateStatsPanel() {
     goldMultiplierElement.className = 'stat-value';
     if (game.getGoldMultiplier() > 1.0) {
       goldMultiplierElement.classList.add('positive');
+    }
+  }
+  
+  if (itemDropElement) {
+    itemDropElement.className = 'stat-value';
+    if (game.getItemDropMultiplier() > 1.0) {
+      itemDropElement.classList.add('positive');
     }
   }
   
@@ -2192,12 +2192,11 @@ function updateCharacterTooltip(tooltipElement, item) {
     
     // Show all non-zero stats
     if (item.attack) statsLines.push(`<div class="tooltip-stat-line"><span>Attack:</span><span>${item.attack}</span></div>`);
-    if (item.defense) statsLines.push(`<div class="tooltip-stat-line"><span>Defense:</span><span>${item.defense}</span></div>`);
+    if (item.maxHp) statsLines.push(`<div class="tooltip-stat-line"><span>Max HP:</span><span>${item.maxHp}</span></div>`);
     if (item.baseAttackInterval) statsLines.push(`<div class="tooltip-stat-line"><span>Attack Speed:</span><span>${(item.baseAttackInterval/1000).toFixed(1)}s</span></div>`);
     if (item.attackSpeed) statsLines.push(`<div class="tooltip-stat-line"><span>Attack Speed:</span><span>${item.attackSpeed}%</span></div>`);
     if (item.critChance) statsLines.push(`<div class="tooltip-stat-line"><span>Critical Chance:</span><span>${item.critChance}%</span></div>`);
     if (item.critDamage) statsLines.push(`<div class="tooltip-stat-line"><span>Critical Damage:</span><span>${item.critDamage}%</span></div>`);
-    if (item.lifeSteal) statsLines.push(`<div class="tooltip-stat-line"><span>Life Steal:</span><span>${item.lifeSteal}%</span></div>`);
     if (item.dodge) statsLines.push(`<div class="tooltip-stat-line"><span>Dodge:</span><span>${item.dodge}%</span></div>`);
     if (item.blockChance) statsLines.push(`<div class="tooltip-stat-line"><span>Block Chance:</span><span>${item.blockChance}%</span></div>`);
     
@@ -2225,12 +2224,11 @@ function updateCharacterTooltip(tooltipElement, item) {
     // For legacy items that can't be separated, show all stats as base stats
     const baseStatsHtml = [];
     if (item.attack) baseStatsHtml.push(`<div class="tooltip-stat-line stat-base"><span>Attack:</span><span>${item.attack}</span></div>`);
-    if (item.defense) baseStatsHtml.push(`<div class="tooltip-stat-line stat-base"><span>Defense:</span><span>${item.defense}</span></div>`);
+    if (item.maxHp) baseStatsHtml.push(`<div class="tooltip-stat-line stat-base"><span>Max HP:</span><span>${item.maxHp}</span></div>`);
     if (item.baseAttackInterval) baseStatsHtml.push(`<div class="tooltip-stat-line stat-base"><span>Base Attack Speed:</span><span>${(item.baseAttackInterval/1000).toFixed(1)}s</span></div>`);
     if (item.attackSpeed) baseStatsHtml.push(`<div class="tooltip-stat-line stat-base"><span>Attack Speed:</span><span>${item.attackSpeed}%</span></div>`);
     if (item.critChance) baseStatsHtml.push(`<div class="tooltip-stat-line stat-base"><span>Critical Chance:</span><span>${item.critChance}%</span></div>`);
     if (item.critDamage) baseStatsHtml.push(`<div class="tooltip-stat-line stat-base"><span>Critical Damage:</span><span>${item.critDamage}%</span></div>`);
-    if (item.lifeSteal) baseStatsHtml.push(`<div class="tooltip-stat-line stat-base"><span>Life Steal:</span><span>${item.lifeSteal}%</span></div>`);
     if (item.dodge) baseStatsHtml.push(`<div class="tooltip-stat-line stat-base"><span>Dodge:</span><span>${item.dodge}%</span></div>`);
     if (item.blockChance) baseStatsHtml.push(`<div class="tooltip-stat-line stat-base"><span>Block Chance:</span><span>${item.blockChance}%</span></div>`);
     
@@ -2261,8 +2259,8 @@ function updateCharacterTooltip(tooltipElement, item) {
     baseStatsHtml.push(`<div class="tooltip-stat-line stat-base"><span>Base Attack Speed:</span><span>${(item.baseAttackInterval/1000).toFixed(1)}s</span></div>`);
   }
   
-  if (['helmet', 'body', 'legs', 'boots', 'offhand'].includes(item.type) || baseStats.defense > 0) {
-    baseStatsHtml.push(`<div class="tooltip-stat-line stat-base"><span>Defense:</span><span>${baseStats.defense}</span></div>`);
+  if (['helmet', 'body', 'legs', 'boots', 'offhand'].includes(item.type) || baseStats.maxHp > 0) {
+    baseStatsHtml.push(`<div class="tooltip-stat-line stat-base"><span>Max HP:</span><span>${baseStats.maxHp}</span></div>`);
   }
   
   // Other base stats
@@ -2287,8 +2285,8 @@ function updateCharacterTooltip(tooltipElement, item) {
     affixStatsHtml.push(`<div class="tooltip-stat-line stat-neutral"><span>Attack:</span><span>${affixStats.attack}</span></div>`);
   }
   
-  if (affixStats.defense > 0) {
-    affixStatsHtml.push(`<div class="tooltip-stat-line stat-neutral"><span>Defense:</span><span>${affixStats.defense}</span></div>`);
+  if (affixStats.maxHp > 0) {
+    affixStatsHtml.push(`<div class="tooltip-stat-line stat-neutral"><span>Max HP:</span><span>${affixStats.maxHp}</span></div>`);
   }
   
   statList.forEach(({ key, label, unit }) => {
@@ -2324,7 +2322,6 @@ function isStatImprovement(item) {
   
   const newStats = {
     attack: item.attack || 0,
-    defense: item.defense || 0,
     maxHp: item.maxHp || 0,
     attackSpeed: item.attackSpeed || 0,
     critChance: item.critChance || 0,
@@ -2336,7 +2333,6 @@ function isStatImprovement(item) {
   
   const currentStats = {
     attack: currentItem.attack || 0,
-    defense: currentItem.defense || 0,
     maxHp: currentItem.maxHp || 0,
     attackSpeed: currentItem.attackSpeed || 0,
     critChance: currentItem.critChance || 0,
@@ -2621,7 +2617,7 @@ function updateShop() {
     // Create stats display - only show non-zero stats
     const shopStats = [];
     if (item.attack > 0) shopStats.push(`ATK: ${item.attack}`);
-    if (item.defense > 0) shopStats.push(`DEF: ${item.defense}`);
+    if (item.maxHp > 0) shopStats.push(`HP: ${item.maxHp}`);
     const shopStatsHtml = shopStats.join(' | ');
     
     itemDiv.innerHTML = `
@@ -2676,6 +2672,9 @@ function startCombat() {
     game.attackBars.enemy.currentTime = 0;
     game.attackBars.player.maxTime = game.getPlayerAttackInterval();
     game.attackBars.enemy.maxTime = game.getEnemyAttackInterval(game.currentEnemy);
+    
+    // Update UI to show the new enemy
+    updateUI();
   }
 }
 
@@ -3231,25 +3230,22 @@ function refreshZoneButtons() {
       // Remove old click handler and add new one
       const newButton = button.cloneNode(true);
       newButton.addEventListener('click', () => changeZone(zoneKey));
-      button.parentNode.replaceChild(newButton, button);
       
-      // Update tooltip
+      // Add tooltip event listeners for unlocked zones
       const zone = game.zones[zoneKey];
-      if (zone.enemies && zone.enemies.length > 0) {
-        const enemyList = zone.enemies.map(enemy => 
-          `${enemy.name}`
-        ).join('\n');
-        
-        let tooltip = `${zone.description}\n\nEnemies:\n${enemyList}`;
-        
-        if (zoneKey === 'goblinCave' && zone.boss) {
-          tooltip += `\n\nBoss: ${zone.boss.name} (drops legendary items!)`;
-        }
-        
-        newButton.title = tooltip;
-      } else {
-        newButton.title = zone.description;
-      }
+      newButton.addEventListener('mouseenter', (e) => {
+        showZoneTooltip(e, zoneKey, zone, true);
+      });
+      
+      newButton.addEventListener('mouseleave', () => {
+        hideZoneTooltip();
+      });
+      
+      newButton.addEventListener('mousemove', (e) => {
+        updateZoneTooltipPosition(e);
+      });
+      
+      button.parentNode.replaceChild(newButton, button);
     }
   });
 }
@@ -3333,6 +3329,7 @@ document.querySelectorAll('.character-slot').forEach(slot => {
       game.player.inventory.push(itemWithTimestamp);
       game.player.equipment[slotType] = null;
       game.needsCharacterUpdate = true;
+      game.needsInventoryUpdate = true;
       game.calculateStats();
       game.addLogMessage(`Unequipped ${equippedItem.fullName || equippedItem.name}`, 'system');
       
@@ -3400,11 +3397,10 @@ function gameLoop(currentTime = performance.now()) {
 
 // Initialize Game
 function initGame() {
-  console.log('initGame: Starting game initialization');
   game.calculateStats();
+  checkZoneUnlocks(); // Unlock zones based on level (especially for testing level 100)
   initializeZones();
   changeZone('forest');
-  console.log('initGame: Game initialized, current zone:', game.currentZone, 'Combat active:', game.combat.isActive);
   
   // Initialize the end run button text
   updateEndRunButton();
@@ -3631,12 +3627,12 @@ function showInventoryTooltip(event, item, showComparison = false) {
     baseStatsHtml.push(statText);
   }
   
-  if (baseStats.defense > 0) {
-    let statText = `${baseStats.defense} Defense`;
+  if (baseStats.maxHp > 0) {
+    let statText = `${baseStats.maxHp} Max HP`;
     
     if (showComparison && equippedItem) {
       const { baseStats: equippedBaseStats } = separateItemStats(equippedItem);
-      const difference = baseStats.defense - equippedBaseStats.defense;
+      const difference = baseStats.maxHp - equippedbaseStats.maxHp;
       if (difference > 0) {
         statText = `<div class="stat-gain">${statText} (+${difference})</div>`;
       } else if (difference < 0) {
@@ -3704,12 +3700,12 @@ function showInventoryTooltip(event, item, showComparison = false) {
     affixStatsHtml.push(statText);
   }
   
-  if (affixStats.defense > 0) {
-    let statText = `${affixStats.defense} Defense`;
+  if (affixStats.maxHp > 0) {
+    let statText = `${affixStats.maxHp} Max HP`;
     
     if (showComparison && equippedItem) {
       const { affixStats: equippedAffixStats } = separateItemStats(equippedItem);
-      const difference = affixStats.defense - equippedAffixStats.defense;
+      const difference = affixStats.maxHp - equippedaffixStats.maxHp;
       if (difference > 0) {
         statText = `<div class="stat-gain">${statText} (+${difference})</div>`;
       } else if (difference < 0) {
@@ -3766,7 +3762,7 @@ function showInventoryTooltip(event, item, showComparison = false) {
     // Check for stats that exist on equipped item but not on inventory item
     const allStats = [
       { key: 'attack', label: 'Attack', unit: '', isBase: true },
-      { key: 'defense', label: 'Defense', unit: '', isBase: true },
+      { key: 'maxHp', label: 'Max HP', unit: '', isBase: true },
       { key: 'attackSpeed', label: 'Attack Speed', unit: '%', isBase: true },
       { key: 'critChance', label: 'Crit Chance', unit: '%', isBase: true },
       { key: 'critDamage', label: 'Crit Damage', unit: '%', isBase: true },
@@ -3904,33 +3900,9 @@ function showStatsTooltip(event, statType) {
           <span class="stat-breakdown-value">${game.player.attack}</span>
         </div>
       `;
-    } else if (statType === 'defense') {
-      const baseDefense = game.getBaseDefenseWithTalents();
-      const equipmentDefense = game.player.equipmentDefense || 0;
-      const equipmentBreakdown = getEquipmentBreakdown('defense');
-      
-      nameElement.textContent = 'Total Defense Breakdown';
-      tooltipContent = `
-        <div class="stat-breakdown-item">
-          <span>Base Defense:</span>
-          <span class="stat-breakdown-value">${baseDefense}</span>
-        </div>
-        ${equipmentBreakdown.length > 0 ? `
-        <div class="stat-breakdown-section">Equipment Bonuses:</div>
-        ${equipmentBreakdown.map(item => `
-          <div class="stat-breakdown-item equipment-item">
-            <span>${item.name}:</span>
-            <span class="stat-breakdown-value">+${item.value}</span>
-          </div>
-        `).join('')}
-        ` : ''}
-        <div class="stat-breakdown-item total">
-          <span>Total Defense:</span>
-          <span class="stat-breakdown-value">${game.player.defense}</span>
-        </div>
-      `;
     } else if (statType === 'hp') {
       const baseHP = 100; // Base HP
+      const levelHpBonus = (game.player.level - 1) * 10; // 10 HP per level beyond level 1
       const equipmentBreakdown = getEquipmentBreakdown('maxHp');
       const totalEquipmentHP = equipmentBreakdown.reduce((sum, item) => sum + item.value, 0);
       
@@ -3939,6 +3911,10 @@ function showStatsTooltip(event, statType) {
         <div class="stat-breakdown-item">
           <span>Base HP:</span>
           <span class="stat-breakdown-value">${baseHP}</span>
+        </div>
+        <div class="stat-breakdown-item">
+          <span>Level Bonus (${game.player.level - 1} × 10):</span>
+          <span class="stat-breakdown-value">+${levelHpBonus}</span>
         </div>
         ${equipmentBreakdown.length > 0 ? `
         <div class="stat-breakdown-section">Equipment Bonuses:</div>
@@ -4181,6 +4157,36 @@ function showStatsTooltip(event, statType) {
         <div class="stat-breakdown-item total">
           <span>Total Gold Multiplier:</span>
           <span class="stat-breakdown-value">${totalMultiplier.toFixed(2)}x</span>
+        </div>
+      `;
+    } else if (statType === 'item-drop-chance') {
+      const baseChance = 25;
+      const wealthLevel2 = game.getTalentLevel('wealth', 'wealth_2');
+      const wealthLevel4 = game.getTalentLevel('wealth', 'wealth_4');
+      const totalMultiplier = game.getItemDropMultiplier();
+      const totalBonus = (totalMultiplier - 1) * 100;
+      
+      nameElement.textContent = 'Item Drop Chance Breakdown';
+      tooltipContent = `
+        <div class="stat-breakdown-item">
+          <span>Base Drop Chance:</span>
+          <span class="stat-breakdown-value">${baseChance}%</span>
+        </div>
+        ${wealthLevel2 > 0 ? `
+        <div class="stat-breakdown-item">
+          <span>Lucky Find (Lv${wealthLevel2}):</span>
+          <span class="stat-breakdown-value">+${(wealthLevel2 * 10).toFixed(0)}%</span>
+        </div>
+        ` : ''}
+        ${wealthLevel4 > 0 ? `
+        <div class="stat-breakdown-item">
+          <span>Golden Touch:</span>
+          <span class="stat-breakdown-value">+50%</span>
+        </div>
+        ` : ''}
+        <div class="stat-breakdown-item total">
+          <span>Total Drop Chance:</span>
+          <span class="stat-breakdown-value">${(baseChance * totalMultiplier).toFixed(0)}%</span>
         </div>
       `;
     }

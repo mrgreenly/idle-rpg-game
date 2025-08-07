@@ -47,7 +47,7 @@ export const AFFIXES = {
   prefix: {
     // Uncommon prefixes
     'Sturdy': { 
-      stats: { defense: 3, blockChance: 2 },
+      stats: { maxHp: 15, blockChance: 2 },
       allowedTypes: ['helmet', 'body', 'legs', 'boots', 'belt', 'offhand'] // Armor only
     },
     'Sharp': { 
@@ -59,17 +59,17 @@ export const AFFIXES = {
       allowedTypes: ['weapon', 'necklace', 'ring'] // Weapons and accessories
     },
     'Fine': { 
-      stats: { attack: 1, defense: 1, attackSpeed: 2 },
+      stats: { attack: 1, maxHp: 5, attackSpeed: 2 },
       allowedTypes: ['weapon', 'helmet', 'body', 'legs', 'boots', 'belt', 'offhand', 'necklace', 'ring'] // All items
     },
     
     // Rare prefixes
     'Masterwork': { 
-      stats: { attack: 4, defense: 2, critChance: 3 },
+      stats: { attack: 4, maxHp: 10, critChance: 3 },
       allowedTypes: ['weapon', 'helmet', 'body', 'legs', 'boots', 'belt', 'offhand'] // Weapons and armor
     },
     'Superior': { 
-      stats: { attack: 3, critDamage: 10, lifeSteal: 2 },
+      stats: { attack: 3, critDamage: 10 },
       allowedTypes: ['weapon', 'necklace', 'ring'] // Weapons and accessories
     },
     'Enhanced': { 
@@ -77,7 +77,7 @@ export const AFFIXES = {
       allowedTypes: ['weapon', 'boots', 'legs', 'necklace', 'ring'] // Agility items
     },
     'Reinforced': { 
-      stats: { defense: 6, blockChance: 8, dodge: 2 },
+      stats: { maxHp: 30, blockChance: 8, dodge: 2 },
       allowedTypes: ['helmet', 'body', 'legs', 'boots', 'belt', 'offhand'] // Armor only
     },
     
@@ -87,11 +87,11 @@ export const AFFIXES = {
       allowedTypes: ['weapon'] // Weapons only
     },
     'Ancient': { 
-      stats: { attack: 5, defense: 4, lifeSteal: 5, blockChance: 5 },
+      stats: { attack: 5, maxHp: 20, blockChance: 5 },
       allowedTypes: ['weapon', 'helmet', 'body', 'legs', 'boots', 'belt', 'offhand', 'necklace', 'ring'] // All items
     },
     'Mythical': { 
-      stats: { critDamage: 20, lifeSteal: 8, dodge: 8 },
+      stats: { critDamage: 20, dodge: 8 },
       allowedTypes: ['weapon', 'necklace', 'ring'] // Weapons and accessories
     },
     'Heroic': { 
@@ -99,7 +99,7 @@ export const AFFIXES = {
       allowedTypes: ['weapon'] // Weapons only
     },
     'Blessed': { 
-      stats: { defense: 5, lifeSteal: 6, dodge: 6, blockChance: 6 },
+      stats: { maxHp: 25, dodge: 6, blockChance: 6 },
       allowedTypes: ['helmet', 'body', 'legs', 'boots', 'belt', 'offhand', 'necklace', 'ring'] // Armor and accessories
     },
     'Cursed': { 
@@ -109,15 +109,15 @@ export const AFFIXES = {
     
     // Legendary prefixes
     'Divine': { 
-      stats: { attack: 10, critChance: 15, critDamage: 25, lifeSteal: 10 },
+      stats: { attack: 10, critChance: 15, critDamage: 25 },
       allowedTypes: ['weapon', 'necklace', 'ring'] // Weapons and accessories
     },
     'Celestial': { 
-      stats: { defense: 8, blockChance: 15, dodge: 12, attackSpeed: 15 },
+      stats: { maxHp: 40, blockChance: 15, dodge: 12, attackSpeed: 15 },
       allowedTypes: ['helmet', 'body', 'legs', 'boots', 'belt', 'offhand'] // Armor only
     },
     'Eternal': { 
-      stats: { attack: 8, defense: 6, critDamage: 30, lifeSteal: 15 },
+      stats: { attack: 8, maxHp: 30, critDamage: 30 },
       allowedTypes: ['weapon', 'helmet', 'body', 'legs', 'boots', 'belt', 'offhand', 'necklace', 'ring'] // All items
     },
     'Transcendent': { 
@@ -125,11 +125,11 @@ export const AFFIXES = {
       allowedTypes: ['weapon', 'boots', 'legs', 'necklace', 'ring'] // Agility items
     },
     'Omnipotent': { 
-      stats: { attack: 15, critChance: 18, critDamage: 35, lifeSteal: 12 },
+      stats: { attack: 15, critChance: 18, critDamage: 35 },
       allowedTypes: ['weapon', 'necklace', 'ring'] // Weapons and accessories
     },
     'Radiant': { 
-      stats: { defense: 10, dodge: 18, attackSpeed: 25, blockChance: 20 },
+      stats: { maxHp: 50, dodge: 18, attackSpeed: 25, blockChance: 20 },
       allowedTypes: ['helmet', 'body', 'legs', 'boots', 'belt', 'offhand'] // Armor only
     }
   },
@@ -144,7 +144,7 @@ export const AFFIXES = {
       allowedTypes: ['weapon'] // Weapons only
     },
     'of the Warrior': { 
-      stats: { attack: 1, defense: 2, blockChance: 3 },
+      stats: { attack: 1, maxHp: 10, blockChance: 3 },
       allowedTypes: ['weapon', 'helmet', 'body', 'legs', 'boots', 'belt', 'offhand'] // Weapons and armor
     },
     
@@ -154,11 +154,11 @@ export const AFFIXES = {
       allowedTypes: ['weapon', 'necklace', 'ring'] // Weapons and accessories
     },
     'of Excellence': { 
-      stats: { critChance: 8, critDamage: 12, lifeSteal: 3 },
+      stats: { critChance: 8, critDamage: 12 },
       allowedTypes: ['weapon', 'necklace', 'ring'] // Weapons and accessories
     },
     'of the Champion': { 
-      stats: { attack: 3, defense: 3, dodge: 5 },
+      stats: { attack: 3, maxHp: 15, dodge: 5 },
       allowedTypes: ['weapon', 'helmet', 'body', 'legs', 'boots', 'belt', 'offhand'] // Weapons and armor
     },
     'of Mastery': { 
@@ -172,7 +172,7 @@ export const AFFIXES = {
       allowedTypes: ['weapon'] // Weapons only
     },
     'of Legends': { 
-      stats: { defense: 6, blockChance: 12, lifeSteal: 8 },
+      stats: { maxHp: 30, blockChance: 12 },
       allowedTypes: ['helmet', 'body', 'legs', 'boots', 'belt', 'offhand', 'necklace', 'ring'] // Armor and accessories
     },
     'of Heroes': { 
@@ -180,11 +180,11 @@ export const AFFIXES = {
       allowedTypes: ['weapon', 'boots', 'legs'] // Weapons and mobility items
     },
     'of Destiny': { 
-      stats: { critDamage: 25, lifeSteal: 12, attackSpeed: 12 },
+      stats: { critDamage: 25, attackSpeed: 12 },
       allowedTypes: ['weapon', 'necklace', 'ring'] // Weapons and accessories
     },
     'of the Void': { 
-      stats: { attack: 7, critChance: 10, dodge: 12, lifeSteal: 6 },
+      stats: { attack: 7, critChance: 10, dodge: 12 },
       allowedTypes: ['weapon', 'necklace', 'ring'] // Weapons and accessories
     },
     'of Strength': { 
@@ -194,7 +194,7 @@ export const AFFIXES = {
     
     // Legendary suffixes
     'of the Immortals': { 
-      stats: { attack: 10, defense: 8, lifeSteal: 20, blockChance: 15 },
+      stats: { attack: 10, maxHp: 40, blockChance: 15 },
       allowedTypes: ['weapon', 'helmet', 'body', 'legs', 'boots', 'belt', 'offhand', 'necklace', 'ring'] // All items
     },
     'of Eternity': { 
@@ -202,7 +202,7 @@ export const AFFIXES = {
       allowedTypes: ['weapon', 'necklace', 'ring'] // Weapons and accessories
     },
     'of the Divine': { 
-      stats: { attack: 12, defense: 10, dodge: 20, lifeSteal: 15 },
+      stats: { attack: 12, maxHp: 50, dodge: 20 },
       allowedTypes: ['weapon', 'helmet', 'body', 'legs', 'boots', 'belt', 'offhand', 'necklace', 'ring'] // All items
     },
     'of Transcendence': { 
@@ -214,7 +214,7 @@ export const AFFIXES = {
       allowedTypes: ['weapon', 'necklace', 'ring'] // Weapons and accessories
     },
     'of the Cosmos': { 
-      stats: { defense: 12, lifeSteal: 25, attackSpeed: 28, blockChance: 18 },
+      stats: { maxHp: 60, attackSpeed: 28, blockChance: 18 },
       allowedTypes: ['helmet', 'body', 'legs', 'boots', 'belt', 'offhand', 'necklace', 'ring'] // Armor and accessories
     }
   }
@@ -226,7 +226,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Sword', 
       attack: 10, 
-      defense: 0, 
+      maxHp: 0, 
       attackSpeed: 0, 
       baseAttackInterval: 2000, // 2.0 seconds
       critChance: 5, 
@@ -239,7 +239,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Axe', 
       attack: 15, 
-      defense: 0, 
+      maxHp: 0, 
       attackSpeed: 0, 
       baseAttackInterval: 2800, // 2.8 seconds (slower)
       critChance: 8, 
@@ -252,7 +252,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Mace', 
       attack: 12, 
-      defense: 0, 
+      maxHp: 0, 
       attackSpeed: 0, 
       baseAttackInterval: 2400, // 2.4 seconds
       critChance: 2, 
@@ -265,7 +265,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Dagger', 
       attack: 6, 
-      defense: 0, 
+      maxHp: 0, 
       attackSpeed: 0, 
       baseAttackInterval: 1600, // 1.6 seconds (faster)
       critChance: 12, 
@@ -278,12 +278,12 @@ export const BASE_ITEMS = {
     { 
       name: 'Staff', 
       attack: 8, 
-      defense: 0, 
+      maxHp: 0, 
       attackSpeed: 0, 
       baseAttackInterval: 2200, // 2.2 seconds
       critChance: 10, 
       critDamage: 25, 
-      lifeSteal: 3, 
+      lifeSteal: 0, 
       dodge: 0, 
       blockChance: 0,
       handType: '1h'
@@ -291,7 +291,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Greatsword', 
       attack: 20, 
-      defense: 0, 
+      maxHp: 0, 
       attackSpeed: 0, 
       baseAttackInterval: 3200, // 3.2 seconds (much slower)
       critChance: 3, 
@@ -304,7 +304,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Battleaxe', 
       attack: 25, 
-      defense: 0, 
+      maxHp: 0, 
       attackSpeed: 0, 
       baseAttackInterval: 3600, // 3.6 seconds (slowest)
       critChance: 5, 
@@ -317,7 +317,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Warhammer', 
       attack: 22, 
-      defense: 0, 
+      maxHp: 0, 
       attackSpeed: 0, 
       baseAttackInterval: 3400, // 3.4 seconds (very slow)
       critChance: 1, 
@@ -332,7 +332,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Buckler', 
       attack: 0, 
-      defense: 8, 
+      maxHp: 40, 
       attackSpeed: 0, 
       critChance: 0, 
       critDamage: 0, 
@@ -343,7 +343,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Round Shield', 
       attack: 0, 
-      defense: 12, 
+      maxHp: 60, 
       attackSpeed: -5, 
       critChance: 0, 
       critDamage: 0, 
@@ -354,7 +354,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Tower Shield', 
       attack: 0, 
-      defense: 18, 
+      maxHp: 18, 
       attackSpeed: -10, 
       critChance: 0, 
       critDamage: 0, 
@@ -365,7 +365,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Tome', 
       attack: 3, 
-      defense: 0, 
+      maxHp: 0, 
       attackSpeed: 5, 
       critChance: 0, 
       critDamage: 0, 
@@ -378,7 +378,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Helmet', 
       attack: 0, 
-      defense: 5, 
+      maxHp: 5, 
       attackSpeed: 0, 
       critChance: 0, 
       critDamage: 0, 
@@ -389,7 +389,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Cap', 
       attack: 0, 
-      defense: 3, 
+      maxHp: 3, 
       attackSpeed: 2, 
       critChance: 0, 
       critDamage: 0, 
@@ -400,7 +400,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Crown', 
       attack: 0, 
-      defense: 4, 
+      maxHp: 20, 
       attackSpeed: 0, 
       critChance: 3, 
       critDamage: 5, 
@@ -411,7 +411,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Hood', 
       attack: 0, 
-      defense: 2, 
+      maxHp: 10, 
       attackSpeed: 3, 
       critChance: 2, 
       critDamage: 0, 
@@ -424,7 +424,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Armor', 
       attack: 0, 
-      defense: 12, 
+      maxHp: 60, 
       attackSpeed: -5, 
       critChance: 0, 
       critDamage: 0, 
@@ -435,7 +435,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Robe', 
       attack: 0, 
-      defense: 8, 
+      maxHp: 40, 
       attackSpeed: 5, 
       critChance: 5, 
       critDamage: 10, 
@@ -446,7 +446,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Vest', 
       attack: 0, 
-      defense: 10, 
+      maxHp: 50, 
       attackSpeed: 0, 
       critChance: 0, 
       critDamage: 0, 
@@ -457,7 +457,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Tunic', 
       attack: 0, 
-      defense: 6, 
+      maxHp: 30, 
       attackSpeed: 8, 
       critChance: 0, 
       critDamage: 0, 
@@ -470,7 +470,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Greaves', 
       attack: 0, 
-      defense: 8, 
+      maxHp: 40, 
       attackSpeed: -3, 
       critChance: 0, 
       critDamage: 0, 
@@ -481,7 +481,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Pants', 
       attack: 0, 
-      defense: 6, 
+      maxHp: 30, 
       attackSpeed: 5, 
       critChance: 0, 
       critDamage: 0, 
@@ -492,7 +492,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Leggings', 
       attack: 0, 
-      defense: 7, 
+      maxHp: 7, 
       attackSpeed: 0, 
       critChance: 0, 
       critDamage: 0, 
@@ -503,7 +503,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Shorts', 
       attack: 0, 
-      defense: 4, 
+      maxHp: 20, 
       attackSpeed: 10, 
       critChance: 2, 
       critDamage: 0, 
@@ -516,7 +516,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Sandals', 
       attack: 0, 
-      defense: 2, 
+      maxHp: 10, 
       attackSpeed: 8, 
       critChance: 0, 
       critDamage: 0, 
@@ -527,7 +527,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Boots', 
       attack: 0, 
-      defense: 5, 
+      maxHp: 5, 
       attackSpeed: 3, 
       critChance: 0, 
       critDamage: 0, 
@@ -538,7 +538,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Heavy Boots', 
       attack: 0, 
-      defense: 8, 
+      maxHp: 40, 
       attackSpeed: -3, 
       critChance: 0, 
       critDamage: 0, 
@@ -549,7 +549,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Speed Boots', 
       attack: 0, 
-      defense: 3, 
+      maxHp: 3, 
       attackSpeed: 15, 
       critChance: 2, 
       critDamage: 0, 
@@ -562,7 +562,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Leather Belt', 
       attack: 0, 
-      defense: 1, 
+      maxHp: 1, 
       attackSpeed: 0, 
       critChance: 0, 
       critDamage: 0, 
@@ -573,7 +573,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Utility Belt', 
       attack: 0, 
-      defense: 0, 
+      maxHp: 0, 
       attackSpeed: 5, 
       critChance: 3, 
       critDamage: 0, 
@@ -584,7 +584,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Chain Belt', 
       attack: 0, 
-      defense: 0, 
+      maxHp: 0, 
       attackSpeed: 0, 
       critChance: 0, 
       critDamage: 0, 
@@ -595,7 +595,7 @@ export const BASE_ITEMS = {
     { 
       name: 'War Belt', 
       attack: 0, 
-      defense: 0, 
+      maxHp: 0, 
       attackSpeed: 0, 
       critChance: 5, 
       critDamage: 8, 
@@ -608,7 +608,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Amulet', 
       attack: 0, 
-      defense: 0, 
+      maxHp: 0, 
       attackSpeed: 0, 
       critChance: 8, 
       critDamage: 15, 
@@ -619,7 +619,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Pendant', 
       attack: 0, 
-      defense: 0, 
+      maxHp: 0, 
       attackSpeed: 5, 
       critChance: 0, 
       critDamage: 0, 
@@ -632,7 +632,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Ring', 
       attack: 0, 
-      defense: 0, 
+      maxHp: 0, 
       attackSpeed: 3, 
       critChance: 5, 
       critDamage: 8, 
@@ -643,7 +643,7 @@ export const BASE_ITEMS = {
     { 
       name: 'Bracelet', 
       attack: 0, 
-      defense: 0, 
+      maxHp: 0, 
       attackSpeed: 8, 
       critChance: 6, 
       critDamage: 0, 
