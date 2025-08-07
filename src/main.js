@@ -2371,7 +2371,7 @@ function getGearIcon(item) {
       ring: 'ring'
     };
     const iconName = gearIcons[item] || 'sword';
-    return `<img src="./src/assets/gear/${iconName}.svg" alt="${item}" class="gear-icon" />`;
+    return `<img src="${import.meta.env.BASE_URL}assets/gear/${iconName}.svg" alt="${item}" class="gear-icon" />`;
   }
   
   // For specific item objects, return detailed icons based on item name
@@ -2426,7 +2426,7 @@ function getGearIcon(item) {
   // Get rarity for CSS class
   const rarity = item.rarity || 'common';
   
-  return `<img src="./src/assets/gear/${svgFileName}.svg" alt="${item.name}" class="gear-icon rarity-${rarity}" loading="eager" onerror="this.style.display='none';" />`;
+  return `<img src="${import.meta.env.BASE_URL}assets/gear/${svgFileName}.svg" alt="${item.name}" class="gear-icon rarity-${rarity}" loading="eager" onerror="this.style.display='none';" />`;
 }
 
 function updateInventory() {
@@ -4238,7 +4238,7 @@ function preloadGearIcons() {
   
   iconNames.forEach(iconName => {
     const img = new Image();
-    img.src = `./src/assets/gear/${iconName}.svg`;
+    img.src = `${import.meta.env.BASE_URL}assets/gear/${iconName}.svg`;
     // Optional: add to a cache or just let browser cache handle it
   });
 }

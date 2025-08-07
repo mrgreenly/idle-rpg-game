@@ -5,5 +5,7 @@ export default defineConfig({
   base: '/idle-rpg-game/', // Replace with your actual GitHub repo name
   build: {
     outDir: 'dist',
-  }
+    assetsDir: 'assets'
+  },
+  publicDir: 'public'
 })
