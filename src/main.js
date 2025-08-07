@@ -2442,49 +2442,16 @@ function updateInventory() {
     itemDiv.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      
-      // Check if shift key is held for equipping
-      if (e.shiftKey) {
-        // Equip item
-        const itemIndex = parseInt(itemDiv.getAttribute('data-item-index'));
-        const itemToEquip = game.player.inventory[itemIndex];
-        
-        if (itemToEquip && itemIndex >= 0 && itemIndex < game.player.inventory.length) {
-          // Create a copy for equipping
-          const equipItem = { ...itemToEquip };
-          
-          // Hide tooltip since inventory will be updated
-          hideInventoryTooltip();
-          
-          // Equip the item with the inventory index
-          game.equipItem(equipItem, true, itemIndex);
-          game.addLogMessage(`✨ Equipped ${equipItem.fullName || equipItem.name}!`, 'system');
-          
-          // Add visual feedback
-          itemDiv.classList.add('equipping');
-          setTimeout(() => {
-            updateUI();
-          }, 300);
-        }
-      } else {
-        // Sell item
-        const itemIndex = parseInt(itemDiv.getAttribute('data-item-index'));
-        const itemToSell = game.player.inventory[itemIndex];
-        
-        if (itemToSell && itemIndex >= 0 && itemIndex < game.player.inventory.length) {
-          game.sellItem(itemToSell);
-          game.player.inventory.splice(itemIndex, 1);
-          game.needsInventoryUpdate = true;
-          
-          // Hide tooltip since item is being removed
-          hideInventoryTooltip();
-          
-          // Add visual feedback
-          itemDiv.classList.add('selling');
-          setTimeout(() => {
-            updateUI();
-          }, 300);
-        }
+      const itemIndex = parseInt(itemDiv.getAttribute('data-item-index'));
+      // Left click or shift+click: equip
+      const itemToEquip = game.player.inventory[itemIndex];
+      if (itemToEquip && itemIndex >= 0 && itemIndex < game.player.inventory.length) {
+        const equipItem = { ...itemToEquip };
+        hideInventoryTooltip();
+        game.equipItem(equipItem, true, itemIndex);
+        game.addLogMessage(`✨ Equipped ${equipItem.fullName || equipItem.name}!`, 'system');
+        itemDiv.classList.add('equipping');
+        setTimeout(() => { updateUI(); }, 300);
       }
     });
     
