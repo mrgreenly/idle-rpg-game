@@ -782,6 +782,7 @@ class GameState {
           critDamage: 0,
           dodge: 0,
           blockChance: 0,
+          price: 0, // Rusty Sword sells for 0 gold
           baseAttackInterval: 2500 // 2.5 seconds
         },
         offhand: null,
