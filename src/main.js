@@ -21,6 +21,7 @@ const TALENT_TREES = {
       {
         id: 'exploration_1',
         name: 'Zone Scout',
+        icon: '🧭',
         description: 'Unlocks additional zones earlier',
         effect: 'Reduce zone unlock level requirements by 2',
         cost: 50,
@@ -30,6 +31,7 @@ const TALENT_TREES = {
       {
         id: 'exploration_2',
         name: 'Monster Hunter',
+        icon: '🏹',
         description: 'Encounter rare enemies more often',
         effect: 'Increase rare enemy spawn chance by 25%',
         cost: 75,
@@ -39,6 +41,7 @@ const TALENT_TREES = {
       {
         id: 'exploration_3',
         name: 'Boss Slayer',
+        icon: '🗡️',
         description: 'Reduce boss requirements',
         effect: 'Reduce boss spawn requirements by 5 kills',
         cost: 100,
@@ -48,6 +51,7 @@ const TALENT_TREES = {
       {
         id: 'exploration_4',
         name: 'Zone Master',
+        icon: '👑',
         description: 'Access to exclusive high-tier zones',
         effect: 'Unlocks special endgame zones',
         cost: 200,
@@ -64,6 +68,7 @@ const TALENT_TREES = {
       {
         id: 'power_1',
         name: 'Warrior Training',
+        icon: '💪',
         description: 'Increase base attack power',
         effect: '+5 base attack per level',
         cost: 40,
@@ -73,6 +78,7 @@ const TALENT_TREES = {
       {
         id: 'power_2',
         name: 'Combat Mastery',
+        icon: '🎯',
         description: 'Improve critical hit chance',
         effect: '+2% critical chance per level',
         cost: 60,
@@ -82,6 +88,7 @@ const TALENT_TREES = {
       {
         id: 'power_3',
         name: 'Berserker Rage',
+        icon: '⚡',
         description: 'Increase attack speed',
         effect: '+10% attack speed per level',
         cost: 80,
@@ -91,6 +98,7 @@ const TALENT_TREES = {
       {
         id: 'power_4',
         name: 'Legendary Warrior',
+        icon: '🏆',
         description: 'Massive combat bonuses',
         effect: '+50% damage, +25% crit chance',
         cost: 250,
@@ -107,6 +115,7 @@ const TALENT_TREES = {
       {
         id: 'wealth_1',
         name: 'Coin Collector',
+        icon: '🪙',
         description: 'Increase gold drops from enemies',
         effect: '+25% gold gain per level',
         cost: 45,
@@ -116,6 +125,7 @@ const TALENT_TREES = {
       {
         id: 'wealth_2',
         name: 'Lucky Find',
+        icon: '🍀',
         description: 'Increase item drop chance',
         effect: '+10% item drop chance per level',
         cost: 70,
@@ -125,6 +135,7 @@ const TALENT_TREES = {
       {
         id: 'wealth_3',
         name: 'Treasure Hunter',
+        icon: '💎',
         description: 'Higher chance for rare items',
         effect: '+15% chance for higher rarity per level',
         cost: 90,
@@ -134,6 +145,7 @@ const TALENT_TREES = {
       {
         id: 'wealth_4',
         name: 'Golden Touch',
+        icon: '✨',
         description: 'Massive wealth bonuses',
         effect: 'Double gold gain, +50% item drops',
         cost: 300,
@@ -150,6 +162,7 @@ const TALENT_TREES = {
       {
         id: 'knowledge_1',
         name: 'Quick Learner',
+        icon: '📖',
         description: 'Gain experience faster',
         effect: '+20% experience gain per level',
         cost: 35,
@@ -159,6 +172,7 @@ const TALENT_TREES = {
       {
         id: 'knowledge_2',
         name: 'Battle Wisdom',
+        icon: '⚔️',
         description: 'Bonus XP from combat victories',
         effect: '+50% bonus XP from defeating enemies per level',
         cost: 55,
@@ -168,6 +182,7 @@ const TALENT_TREES = {
       {
         id: 'knowledge_3',
         name: 'Master Scholar',
+        icon: '🎓',
         description: 'Reduce XP requirements for leveling',
         effect: '-10% XP needed per level (max 30%)',
         cost: 85,
@@ -177,6 +192,7 @@ const TALENT_TREES = {
       {
         id: 'knowledge_4',
         name: 'Enlightened One',
+        icon: '🔮',
         description: 'Transcendent learning abilities',
         effect: 'Triple XP gain, start at level 5',
         cost: 400,
@@ -2748,10 +2764,7 @@ function populateTalentTree() {
         
         nodeElement.innerHTML = `
           ${currentLevel > 0 ? `<div class="purchase-counter">${currentLevel}</div>` : ''}
-          <div class="talent-header">
-            <div class="talent-node-name">${talent.name}</div>
-          </div>
-          <div class="talent-node-cost">${nextCost} gold</div>
+          <div class="talent-icon">${talent.icon}</div>
         `;
         
         // Add tooltip functionality
