@@ -3,6 +3,14 @@ import { ITEM_RARITIES, BASE_ITEMS, AFFIXES } from './data/items.js'
 import { ZONES, SHOP_ITEMS } from './data/zones.js'
 import { getRandomDeathMessage } from './data/deathMessages.js'
 
+// Helper function to get asset URL with proper base path handling
+function getAssetUrl(path) {
+  const baseUrl = import.meta.env.BASE_URL;
+  // Remove leading slash from path if base URL already ends with slash
+  const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+  return baseUrl + cleanPath;
+}
+
 // Talent Tree Data
 const TALENT_TREES = {
   exploration: {
@@ -2371,7 +2379,7 @@ function getGearIcon(item) {
       ring: 'ring'
     };
     const iconName = gearIcons[item] || 'sword';
-    return `<img src="${import.meta.env.BASE_URL}assets/gear/${iconName}.svg" alt="${item}" class="gear-icon" />`;
+    return `<img src="${getAssetUrl(`assets/gear/${iconName}.svg`)}" alt="${item}" class="gear-icon" />`;
   }
   
   // For specific item objects, return detailed icons based on item name
@@ -2426,7 +2434,7 @@ function getGearIcon(item) {
   // Get rarity for CSS class
   const rarity = item.rarity || 'common';
   
-  return `<img src="${import.meta.env.BASE_URL}assets/gear/${svgFileName}.svg" alt="${item.name}" class="gear-icon rarity-${rarity}" loading="eager" onerror="this.style.display='none';" />`;
+  return `<img src="${getAssetUrl(`assets/gear/${svgFileName}.svg`)}" alt="${item.name}" class="gear-icon rarity-${rarity}" loading="eager" onerror="this.style.display='none';" />`;
 }
 
 function updateInventory() {
@@ -4238,7 +4246,7 @@ function preloadGearIcons() {
   
   iconNames.forEach(iconName => {
     const img = new Image();
-    img.src = `${import.meta.env.BASE_URL}assets/gear/${iconName}.svg`;
+    img.src = getAssetUrl(`assets/gear/${iconName}.svg`);
     // Optional: add to a cache or just let browser cache handle it
   });
 }
