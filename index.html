@@ -5,8 +5,8 @@
     <link rel="icon" type="image/svg+xml" href="/idle-rpg-game/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Idle RPG Adventure</title>
-    <script type="module" crossorigin src="/idle-rpg-game/assets/index-CwbRjd8G.js"></script>
-    <link rel="stylesheet" crossorigin href="/idle-rpg-game/assets/index-B3MJe6kr.css">
+    <script type="module" crossorigin src="/idle-rpg-game/assets/index-CFZtcTPM.js"></script>
+    <link rel="stylesheet" crossorigin href="/idle-rpg-game/assets/index-CNdyQJPM.css">
   </head>
   <body>
     <div id="app">
@@ -46,7 +46,6 @@
                 </div>
                 <div class="character-info">
                   <div>ATK: <span id="player-attack">10</span></div>
-                  <div>DEF: <span id="player-defense">5</span></div>
                   <div>Attack Interval: <span id="player-attack-interval">2.0s</span></div>
                 </div>
               </div>
@@ -68,7 +67,6 @@
                 </div>
                 <div class="character-info">
                   <div>ATK: <span id="enemy-attack">8</span></div>
-                  <div>DEF: <span id="enemy-defense">3</span></div>
                   <div>Attack Interval: <span id="enemy-attack-interval">2.0s</span></div>
                 </div>
               </div>
@@ -133,7 +131,7 @@
                   <option value="rarity">Sort by Rarity</option>
                   <option value="type">Sort by Type</option>
                   <option value="attack">Sort by Attack</option>
-                  <option value="defense">Sort by Defense</option>
+                  <option value="maxHp">Sort by Max HP</option>
                   <option value="new">Sort by New</option>
                 </select>
                 <select id="inventory-filter">
@@ -261,10 +259,7 @@
                 <span class="stat-name">Total Attack:</span>
                 <span id="stats-total-attack" class="stat-value">10</span>
               </div>
-              <div class="stat-item stat-tooltip-item" data-tooltip="defense">
-                <span class="stat-name">Total Defense:</span>
-                <span id="stats-total-defense" class="stat-value">5</span>
-              </div>
+              <!-- Total Defense removed - replaced with maxHp from equipment -->
               <div class="stat-item stat-tooltip-item" data-tooltip="attack-speed">
                 <span class="stat-name">Actual Attack Speed:</span>
                 <span id="stats-actual-attack-speed" class="stat-value">2.0s</span>
@@ -277,6 +272,10 @@
                 <span class="stat-name">Gold Multiplier:</span>
                 <span id="stats-gold-multiplier" class="stat-value">1.0x</span>
               </div>
+              <div class="stat-item advanced-stat stat-tooltip-item" data-tooltip="item-drop-chance">
+                <span class="stat-name">Item Drop Chance:</span>
+                <span id="stats-item-drop-chance" class="stat-value">0%</span>
+              </div>
               <div class="stat-item advanced-stat stat-tooltip-item" data-tooltip="crit-chance">
                 <span class="stat-name">Critical Chance:</span>
                 <span id="stats-crit-chance" class="stat-value">0%</span>
@@ -284,10 +283,6 @@
               <div class="stat-item advanced-stat stat-tooltip-item" data-tooltip="crit-damage">
                 <span class="stat-name">Critical Damage:</span>
                 <span id="stats-crit-damage" class="stat-value">0%</span>
-              </div>
-              <div class="stat-item advanced-stat stat-tooltip-item" data-tooltip="life-steal">
-                <span class="stat-name">Life Steal:</span>
-                <span id="stats-life-steal" class="stat-value">0%</span>
               </div>
               <div class="stat-item advanced-stat stat-tooltip-item" data-tooltip="dodge">
                 <span class="stat-name">Dodge:</span>
