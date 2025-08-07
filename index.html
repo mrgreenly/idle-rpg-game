@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/idle-rpg-game/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Idle RPG Adventure</title>
+    <script type="module" crossorigin src="/idle-rpg-game/assets/index-D4YVGkXr.js"></script>
+    <link rel="stylesheet" crossorigin href="/idle-rpg-game/assets/index-B3MJe6kr.css">
+  </head>
+  <body>
+    <div id="app">
+      <header class="game-header">
+        <h1>⚔️ Idle RPG Adventure</h1>
+        <button id="end-run-btn" class="end-run-btn" title="End current run and ascend">💀 End Run</button>
+      </header>
+
+      <main class="game-main">
+        <section class="game-area">
+          <div class="zone-selector">
+            <h3>🗺️ Choose Zone</h3>
+            <div id="zone-buttons" class="zone-buttons"></div>
+          </div>
+
+          <div id="kill-counter" class="kill-counter" style="display: none;">
+            <div class="kill-counter-content">
+              <span class="kill-counter-icon">🏴‍☠️</span>
+              <span class="kill-counter-text" id="kill-counter-text">Goblins defeated: 0/15</span>
+            </div>
+          </div>
+
+          <div class="combat-area">
+            <div class="player-side">
+              <div class="player-display">
+                <div id="player-image" class="player-image warrior"></div>
+                <h4>🛡️ You</h4>
+              </div>
+              <div class="character-display">
+                <div class="hp-bar">
+                  <div id="player-hp-bar" class="hp-fill"></div>
+                  <span class="hp-bar-label" id="player-hp-text">100/100</span>
+                </div>
+                <div class="attack-bar">
+                  <div id="player-attack-fill" class="attack-fill"></div>
+                  <span id="player-attack-label" class="attack-bar-label">Attack</span>
+                </div>
+                <div class="character-info">
+                  <div>ATK: <span id="player-attack">10</span></div>
+                  <div>DEF: <span id="player-defense">5</span></div>
+                  <div>Attack Interval: <span id="player-attack-interval">2.0s</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="enemy-side">
+              <div class="enemy-display">
+                <div id="enemy-image" class="enemy-image slime"></div>
+                <h4 id="enemy-title">Slime</h4>
+              </div>
+              <div class="character-display">
+                <div class="hp-bar">
+                  <div id="enemy-hp-bar" class="hp-fill"></div>
+                  <span class="hp-bar-label" id="enemy-hp-text">50/50</span>
+                </div>
+                <div class="attack-bar">
+                  <div id="enemy-attack-fill" class="attack-fill"></div>
+                  <span id="enemy-attack-label" class="attack-bar-label">Attack</span>
+                </div>
+                <div class="character-info">
+                  <div>ATK: <span id="enemy-attack">8</span></div>
+                  <div>DEF: <span id="enemy-defense">3</span></div>
+                  <div>Attack Interval: <span id="enemy-attack-interval">2.0s</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Boss Warning Overlay -->
+          <div id="boss-warning" class="boss-warning" style="display: none;">
+            <div class="boss-warning-content">
+              <div class="warning-icon">⚠️</div>
+              <div class="warning-text">BOSS INCOMING!</div>
+              <div class="boss-name" id="boss-warning-name">Goblin King</div>
+            </div>
+          </div>
+
+          <!-- Victory Message -->
+          <div id="victory-message" class="victory-message" style="display: none;">
+            <div class="victory-content">
+              <div class="victory-icon">👑</div>
+              <div class="victory-text">VICTORY!</div>
+              <div class="victory-subtext" id="victory-subtext">The Goblin King has been defeated!</div>
+            </div>
+          </div>
+
+          <div class="shop-area" id="shop-area" style="display: none;">
+            <div class="shop-welcome">
+              <h3>🏪 Welcome to the Town Shop</h3>
+              <p>Purchase gear and supplies for your adventures!</p>
+            </div>
+            <div class="shop-content">
+              <div class="shop-items-container">
+                <h4>📦 Available Items</h4>
+                <div id="shop-items" class="shop-grid"></div>
+              </div>
+              <div class="shop-info">
+                <div class="gold-display">
+                  <h4>💰 Your Gold</h4>
+                  <div class="gold-amount">
+                    <span id="shop-gold">0</span> gold
+                  </div>
+                </div>
+                <div class="shop-tips">
+                  <h4>💡 Shop Tips</h4>
+                  <ul>
+                    <li>Better gear increases your combat effectiveness</li>
+                    <li>Earn gold by defeating enemies in combat zones</li>
+                    <li>Gear provides permanent stat bonuses</li>
+                    <li>Higher tier zones drop more valuable items</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="inventory-section">
+            <div class="inventory-header">
+            </div>
+            <div class="inventory-controls">
+              <div class="inventory-filters">
+                <select id="inventory-sort">
+                  <option value="name">Sort by Name</option>
+                  <option value="rarity">Sort by Rarity</option>
+                  <option value="type">Sort by Type</option>
+                  <option value="attack">Sort by Attack</option>
+                  <option value="defense">Sort by Defense</option>
+                  <option value="new">Sort by New</option>
+                </select>
+                <select id="inventory-filter">
+                  <option value="all">All Items</option>
+                  <option value="weapon">Weapons</option>
+                  <option value="offhand">Offhand</option>
+                  <option value="helmet">Helmets</option>
+                  <option value="body">Body Armor</option>
+                  <option value="legs">Leg Armor</option>
+                  <option value="belt">Belts</option>
+                  <option value="boots">Boots</option>
+                  <option value="necklace">Necklaces</option>
+                  <option value="ring">Rings</option>
+                </select>
+              </div>
+              <div class="auto-sell-controls">
+                <label class="auto-sell-toggle">
+                  <input type="checkbox" id="auto-sell-enabled-main"> Enable Auto-Sell
+                </label>
+                <button id="auto-sell-btn" class="auto-sell-btn">⚙️ Auto-Sell Settings</button>
+              </div>
+            </div>
+            <div class="inventory-gold">
+              <span class="gold-icon">💰</span>
+              <span id="inventory-gold" class="gold-amount">0</span>
+            </div>
+            <div class="inventory-items-container">
+            </div>
+            <div id="inventory-items" class="inventory-grid"></div>
+            
+            <!-- Inventory Item Tooltip -->
+            <div id="inventory-tooltip" class="inventory-tooltip" style="display: none;">
+              <div class="tooltip-header">
+                <div class="tooltip-name" id="tooltip-name">Item Name</div>
+                <div class="tooltip-rarity" id="tooltip-rarity">Common</div>
+              </div>
+              <div class="tooltip-stats" id="tooltip-stats">
+                <!-- Stats will be populated by JavaScript -->
+              </div>
+              <div class="tooltip-comparison" id="tooltip-comparison">
+                <!-- Stat comparison will be populated by JavaScript -->
+              </div>
+            </div>
+          </div>
+
+          <div class="activity-log">
+            <div class="log-header">
+              <h4>📋 Activity Log</h4>
+              <div class="log-filters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="combat">⚔️ Combat</button>
+                <button class="filter-btn" data-filter="loot">💎 Loot</button>
+                <button class="filter-btn" data-filter="shop">🛒 Shop</button>
+                <button class="filter-btn" data-filter="system">⚙️ System</button>
+                <button class="clear-log-btn" id="clear-log">🗑️</button>
+              </div>
+            </div>
+            <div id="activity-messages" class="activity-messages"></div>
+          </div>
+        </section>
+
+        <aside class="sidebar">
+          <section class="character-panel">
+            <h3>Character</h3>
+            <div class="level-xp-bar">
+              <div class="level-display">
+                <span class="level-label">Level</span>
+                <span id="character-level" class="level-number">1</span>
+              </div>
+              <div class="xp-bar-container">
+                <div class="xp-bar">
+                  <div id="character-xp-fill" class="xp-fill"></div>
+                  <span id="character-xp-text" class="xp-bar-text">0 / 100</span>
+                </div>
+              </div>
+            </div>
+            <div class="character-grid">
+              <div class="character-slot" data-slot="helmet">
+                <div id="helmet-item" class="equipped-item">None</div>
+                <div class="character-tooltip" id="helmet-tooltip"></div>
+              </div>
+              <div class="character-slot" data-slot="weapon">
+                <div id="weapon-item" class="equipped-item">Rusty Sword</div>
+                <div class="character-tooltip" id="weapon-tooltip"></div>
+              </div>
+              <div class="character-slot" data-slot="offhand">
+                <div id="offhand-item" class="equipped-item">None</div>
+                <div class="character-tooltip" id="offhand-tooltip"></div>
+              </div>
+              <div class="character-slot" data-slot="necklace">
+                <div id="necklace-item" class="equipped-item">None</div>
+                <div class="character-tooltip" id="necklace-tooltip"></div>
+              </div>
+              <div class="character-slot" data-slot="body">
+                <div id="body-item" class="equipped-item">None</div>
+                <div class="character-tooltip" id="body-tooltip"></div>
+              </div>
+              <div class="character-slot" data-slot="ring">
+                <div id="ring-item" class="equipped-item">None</div>
+                <div class="character-tooltip" id="ring-tooltip"></div>
+              </div>
+              <div class="character-slot" data-slot="belt">
+                <div id="belt-item" class="equipped-item">None</div>
+                <div class="character-tooltip" id="belt-tooltip"></div>
+              </div>
+              <div class="character-slot" data-slot="legs">
+                <div id="legs-item" class="equipped-item">None</div>
+                <div class="character-tooltip" id="legs-tooltip"></div>
+              </div>
+              <div class="character-slot" data-slot="boots">
+                <div id="boots-item" class="equipped-item">None</div>
+                <div class="character-tooltip" id="boots-tooltip"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="stats-panel">
+            <h3>Character Stats</h3>
+            <div class="stats-grid">
+              <div class="stat-item stat-tooltip-item" data-tooltip="hp">
+                <span class="stat-name">Max HP:</span>
+                <span id="stats-max-hp" class="stat-value">100</span>
+              </div>
+              <div class="stat-item stat-tooltip-item" data-tooltip="attack">
+                <span class="stat-name">Total Attack:</span>
+                <span id="stats-total-attack" class="stat-value">10</span>
+              </div>
+              <div class="stat-item stat-tooltip-item" data-tooltip="defense">
+                <span class="stat-name">Total Defense:</span>
+                <span id="stats-total-defense" class="stat-value">5</span>
+              </div>
+              <div class="stat-item stat-tooltip-item" data-tooltip="attack-speed">
+                <span class="stat-name">Actual Attack Speed:</span>
+                <span id="stats-actual-attack-speed" class="stat-value">2.0s</span>
+              </div>
+              <div class="stat-item advanced-stat stat-tooltip-item" data-tooltip="xp-multiplier">
+                <span class="stat-name">Experience Multiplier:</span>
+                <span id="stats-xp-multiplier" class="stat-value">1.0x</span>
+              </div>
+              <div class="stat-item advanced-stat stat-tooltip-item" data-tooltip="gold-multiplier">
+                <span class="stat-name">Gold Multiplier:</span>
+                <span id="stats-gold-multiplier" class="stat-value">1.0x</span>
+              </div>
+              <div class="stat-item advanced-stat stat-tooltip-item" data-tooltip="crit-chance">
+                <span class="stat-name">Critical Chance:</span>
+                <span id="stats-crit-chance" class="stat-value">0%</span>
+              </div>
+              <div class="stat-item advanced-stat stat-tooltip-item" data-tooltip="crit-damage">
+                <span class="stat-name">Critical Damage:</span>
+                <span id="stats-crit-damage" class="stat-value">0%</span>
+              </div>
+              <div class="stat-item advanced-stat stat-tooltip-item" data-tooltip="life-steal">
+                <span class="stat-name">Life Steal:</span>
+                <span id="stats-life-steal" class="stat-value">0%</span>
+              </div>
+              <div class="stat-item advanced-stat stat-tooltip-item" data-tooltip="dodge">
+                <span class="stat-name">Dodge:</span>
+                <span id="stats-dodge" class="stat-value">0%</span>
+              </div>
+              <div class="stat-item advanced-stat stat-tooltip-item" data-tooltip="block-chance">
+                <span class="stat-name">Block Chance:</span>
+                <span id="stats-block-chance" class="stat-value">0%</span>
+              </div>
+            </div>
+          </section>
+        </aside>
+      </main>
+
+      <div class="controls">
+        <button id="save-game" class="btn">💾 Save Game</button>
+        <button id="load-game" class="btn">📁 Load Game</button>
+        <button id="reset-game" class="btn btn-danger">🔄 Reset Game</button>
+      </div>
+    </div>
+
+    <!-- Auto-Sell Settings Modal -->
+    <div id="auto-sell-modal" class="modal">
+      <div class="modal-content">
+        <h3>⚙️ Auto-Sell Settings</h3>
+        <p>Automatically sell items based on rarity and type:</p>
+        
+        <div class="auto-sell-settings">
+          <div class="auto-sell-group">
+            <h4>Rarity Settings</h4>
+            <label><input type="checkbox" id="auto-sell-common"> Sell Common items</label>
+            <label><input type="checkbox" id="auto-sell-uncommon"> Sell Uncommon items</label>
+            <label><input type="checkbox" id="auto-sell-rare"> Sell Rare items</label>
+          </div>
+          
+          <div class="auto-sell-group">
+            <h4>Item Type Settings</h4>
+            <label><input type="checkbox" id="auto-sell-weapons"> Weapons</label>
+            <label><input type="checkbox" id="auto-sell-offhand"> Offhand Items</label>
+            <label><input type="checkbox" id="auto-sell-helmets"> Helmets</label>
+            <label><input type="checkbox" id="auto-sell-body"> Body Armor</label>
+            <label><input type="checkbox" id="auto-sell-legs"> Leg Armor</label>
+            <label><input type="checkbox" id="auto-sell-belt"> Belts</label>
+            <label><input type="checkbox" id="auto-sell-boots"> Boots</label>
+            <label><input type="checkbox" id="auto-sell-necklaces"> Necklaces</label>
+            <label><input type="checkbox" id="auto-sell-rings"> Rings</label>
+          </div>
+        </div>
+        
+        <div class="modal-buttons">
+          <button id="save-auto-sell" class="btn">Save Settings</button>
+          <button id="close-auto-sell" class="btn">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Death Screen Modal -->
+    <div id="death-modal" class="death-modal" style="display: none;">
+      <div class="death-content">
+        <div class="death-skull">💀</div>
+        <h2 class="death-title">You Died!</h2>
+        <div class="death-message">
+          <p>You were defeated in battle...</p>
+          <div class="death-penalties">
+            <div class="penalty-item">
+              <span class="penalty-icon">✨</span>
+              <span class="penalty-text">Your journey has reached its end</span>
+            </div>
+            <div class="penalty-item">
+              <span class="penalty-icon">🔄</span>
+              <span class="penalty-text">But you can ascend to gain permanent power!</span>
+            </div>
+          </div>
+          <p class="death-encouragement">Choose your path forward!</p>
+        </div>
+        <button id="ascend-btn" class="btn btn-ascend">✨ Ascend (Gain Power)</button>
+      </div>
+    </div>
+
+    <!-- Talent Tree Modal -->
+    <div id="talent-tree-modal" class="talent-tree-modal" style="display: none;">
+      <div class="talent-tree-content">
+        <div class="talent-tree-scrollable">
+          <div class="talent-tree-header">
+            <h2 class="talent-tree-title">✨ Ascension Tree</h2>
+            <div class="talent-stats">
+              <div class="talent-stat">
+                <span class="stat-value" id="talent-gold">0</span>
+                <span class="stat-label">Gold</span>
+              </div>
+              <div class="talent-stat">
+                <span class="stat-value" id="ascension-count">0</span>
+                <span class="stat-label">Ascensions</span>
+              </div>
+              <div class="talent-stat">
+                <span class="stat-value" id="talent-points">0</span>
+                <span class="stat-label">Upgrades</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="talent-pathways">
+            <!-- Exploration Pathway -->
+            <div id="pathway-exploration" class="talent-pathway exploration">
+              <div class="talent-pathway-header">
+                <div class="talent-pathway-icon">🗺️</div>
+                <h3 class="talent-pathway-name">Exploration</h3>
+              </div>
+              <div class="talent-nodes" id="exploration-nodes">
+                <!-- Nodes will be populated by JavaScript -->
+              </div>
+            </div>
+
+            <!-- Power Pathway -->
+            <div id="pathway-power" class="talent-pathway power">
+              <div class="talent-pathway-header">
+                <div class="talent-pathway-icon">⚔️</div>
+                <h3 class="talent-pathway-name">Power</h3>
+              </div>
+              <div class="talent-nodes" id="power-nodes">
+                <!-- Nodes will be populated by JavaScript -->
+              </div>
+            </div>
+
+            <!-- Wealth Pathway -->
+            <div id="pathway-wealth" class="talent-pathway wealth">
+              <div class="talent-pathway-header">
+                <div class="talent-pathway-icon">💰</div>
+                <h3 class="talent-pathway-name">Wealth</h3>
+              </div>
+              <div class="talent-nodes" id="wealth-nodes">
+                <!-- Nodes will be populated by JavaScript -->
+              </div>
+            </div>
+
+            <!-- Knowledge Pathway -->
+            <div id="pathway-knowledge" class="talent-pathway knowledge">
+              <div class="talent-pathway-header">
+                <div class="talent-pathway-icon">📚</div>
+                <h3 class="talent-pathway-name">Knowledge</h3>
+              </div>
+              <div class="talent-nodes" id="knowledge-nodes">
+                <!-- Nodes will be populated by JavaScript -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="talent-tree-footer">
+          <button id="confirm-ascend" class="btn btn-ascend btn-large">✨ Ascend & Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Talent Tooltip -->
+    <div id="talent-tooltip" class="talent-tooltip" style="display: none;">
+      <div class="tooltip-header">
+        <div class="tooltip-name" id="talent-tooltip-name">Talent Name</div>
+        <div class="tooltip-level" id="talent-tooltip-level">0/5</div>
+      </div>
+      <div class="tooltip-description" id="talent-tooltip-description">
+        Talent description
+      </div>
+      <div class="tooltip-effect" id="talent-tooltip-effect">
+        Effect details
+      </div>
+      <div class="tooltip-cost" id="talent-tooltip-cost">
+        Cost: 50 gold
+      </div>
+    </div>
+
+    <!-- Stats Tooltip -->
+    <div id="stats-tooltip" class="stats-tooltip" style="display: none;">
+      <div class="tooltip-header">
+        <div class="tooltip-name" id="stats-tooltip-name">Stat Breakdown</div>
+      </div>
+      <div class="tooltip-content" id="stats-tooltip-content">
+        <!-- Breakdown will be populated by JavaScript -->
+      </div>
+    </div>
+
+    <!-- Zone Tooltip -->
+    <div id="zone-tooltip" class="zone-tooltip">
+      <div class="zone-tooltip-header">
+        <div class="zone-tooltip-icon" id="zone-tooltip-icon">🗺️</div>
+        <div class="zone-tooltip-title" id="zone-tooltip-title">Zone Name</div>
+      </div>
+      <div class="zone-tooltip-description" id="zone-tooltip-description">Zone description</div>
+      <div class="zone-tooltip-content" id="zone-tooltip-content"></div>
+    </div>
+
+  </body>
+</html>
