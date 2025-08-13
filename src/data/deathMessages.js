@@ -1,3 +1,17 @@
+// Function to update the End Run button text
+export function updateEndRunButton(game, document) {
+  const endRunBtn = document.getElementById('end-run-btn');
+  if (endRunBtn) {
+    endRunBtn.textContent = `💀 ${game.currentDeathMessage}`;
+    endRunBtn.title = `End current run: ${game.currentDeathMessage}`;
+  }
+}
+
+// Function to get a random death message
+export function getRandomDeathMessage() {
+  return DEATH_MESSAGES[Math.floor(Math.random() * DEATH_MESSAGES.length)];
+}
+
 // Death Messages for End Run Button
 // These messages change randomly each time the character dies
 
@@ -34,7 +48,4 @@ export const DEATH_MESSAGES = [
   "Try to milk a wild minotaur"
 ];
 
-// Function to get a random death message
-export function getRandomDeathMessage() {
-  return DEATH_MESSAGES[Math.floor(Math.random() * DEATH_MESSAGES.length)];
-}
+

@@ -1,126 +1,239 @@
-// Talent Tree Configuration
-// Easy to add new pathways, nodes, and modify existing ones
 
-// Helper function to create talent nodes easily
-function createTalentNode(config) {
-  return {
-    id: config.id,
-    name: config.name,
-    icon: config.icon,
-    description: config.description,
-    effect: config.effect,
-    cost: config.cost,
-    maxLevel: config.maxLevel || 1,
-    tier: config.tier,
-    position: config.position, // { x, y }
-    prerequisites: config.prerequisites || []
-  };
+
+export function hideTalentTree(game, document) {
+  const talentModal = document.getElementById('talent-tree-modal');
+  talentModal.style.display = 'none';
+  game.isShowingTalentTree = false;
+  game.ascend(game, document);
 }
 
-// Helper function to create talent pathways easily
-function createTalentPathway(config) {
-  return {
-    name: config.name,
-    icon: config.icon,
-    description: config.description,
-    nodes: config.nodes.map(node => createTalentNode(node))
-  };
+// Talent Tree UI Functions
+export function showTalentTree(game, document) {
+  const talentModal = document.getElementById('talent-tree-modal');
+  talentModal.style.display = 'flex';
+  game.isShowingTalentTree = true;
+  
+  // Populate talent tree
+  populateTalentTree(game, document);
+  updateTalentTreeUI(game);
 }
+
+export function populateTalentTree(game, document) {
+  // Use setTimeout to ensure DOM is fully rendered
+  setTimeout(() => {
+    Object.keys(TALENT_TREES).forEach(pathwayName => {
+      const pathway = TALENT_TREES[pathwayName];
+      const pathwayElement = document.getElementById(`pathway-${pathwayName}`);
+      
+      if (!pathwayElement) return;
+      
+      // Get containers - try both selectors
+      let nodesContainer = pathwayElement.querySelector('.talent-nodes-container');
+      let connectionsContainer = pathwayElement.querySelector('.talent-connections');
+      
+      // Fallback to ID-based selectors if class-based ones don't work
+      if (!nodesContainer) {
+        nodesContainer = document.getElementById(`${pathwayName}-nodes`);
+      }
+      if (!connectionsContainer) {
+        connectionsContainer = document.getElementById(`${pathwayName}-connections`);
+      }
+      
+      if (!nodesContainer || !connectionsContainer) return;
+      
+      // Clear existing content
+      nodesContainer.innerHTML = '';
+      connectionsContainer.innerHTML = '';
+      
+      // Calculate grid dimensions with fallbacks
+      const gridWidth = nodesContainer.clientWidth || 180;
+      const gridHeight = nodesContainer.clientHeight || 350;
+      const nodeSize = 60;
+      
+      // Get max grid coordinates to normalize positions
+      const maxX = Math.max(...pathway.nodes.map(n => n.position.x));
+      const maxY = Math.max(...pathway.nodes.map(n => n.position.y));
+      
+      if (maxX === 0 || maxY === 0) return;
+      
+      // Create talent nodes
+      const nodePositions = {};
+      pathway.nodes.forEach(talent => {
+        const currentLevel = game.getTalentLevel(pathwayName, talent.id);
+        const canAllocate = game.canAllocateTalent(pathwayName, talent.id);
+        let nextCost = talent.cost * (currentLevel + 1);
+        
+        // Apply Enlightened One cost reduction for display
+        const enlightenedOneLevel = game.getTalentLevel('knowledge', 'knowledge_4');
+        if (enlightenedOneLevel > 0) {
+          nextCost = Math.floor(nextCost * 0.5);
+        }
+        
+        // Calculate absolute position
+        const x = (talent.position.x / maxX) * (gridWidth - nodeSize) + nodeSize/2;
+        const y = (talent.position.y / maxY) * (gridHeight - nodeSize) + nodeSize/2;
+        nodePositions[talent.id] = { x, y };
+        
+        const nodeElement = document.createElement('div');
+        nodeElement.className = `talent-node tier-${talent.tier} ${currentLevel > 0 ? 'allocated' : ''} ${canAllocate ? 'available' : 'locked'}`;
+        nodeElement.dataset.pathway = pathwayName;
+        nodeElement.dataset.talent = talent.id;
+        nodeElement.style.left = `${x}px`;
+        nodeElement.style.top = `${y}px`;
+        
+        nodeElement.innerHTML = `
+          ${currentLevel > 0 ? `<div class="purchase-counter">${currentLevel}</div>` : ''}
+          <div class="talent-icon">${talent.icon}</div>
+        `;
+        
+        // Add tooltip functionality
+        nodeElement.addEventListener('mouseenter', (e) => {
+          showTalentTooltip(e, talent, currentLevel, nextCost);
+        });
+        
+        nodeElement.addEventListener('mouseleave', () => {
+          hideTalentTooltip();
+        });
+        
+        nodeElement.addEventListener('mousemove', (e) => {
+          updateTalentTooltipPosition(e, document);
+        });
+        
+        nodeElement.addEventListener('click', () => {
+          if (game.canAllocateTalent(pathwayName, talent.id)) {
+            game.allocateTalent(pathwayName, talent.id);
+            updateTalentTreeUI(game);
+          }
+        });
+        
+        nodesContainer.appendChild(nodeElement);
+      });
+      
+      // Draw connection lines
+      pathway.nodes.forEach(talent => {
+        if (talent.prerequisites && talent.prerequisites.length > 0) {
+          talent.prerequisites.forEach(prereqId => {
+            const prereqNode = pathway.nodes.find(n => n.id === prereqId);
+            if (prereqNode && nodePositions[talent.id] && nodePositions[prereqId]) {
+              drawConnection(
+                connectionsContainer,
+                nodePositions[prereqId],
+                nodePositions[talent.id],
+                game.getTalentLevel(pathwayName, prereqId) > 0,
+                game.canAllocateTalent(pathwayName, talent.id)
+              );
+            }
+          });
+        }
+      });
+    });
+  }, 100);
+}
+
+function drawConnection(svgContainer, fromPos, toPos, isActive, isAvailable) {
+  const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  line.setAttribute('x1', fromPos.x);
+  line.setAttribute('y1', fromPos.y);
+  line.setAttribute('x2', toPos.x);
+  line.setAttribute('y2', toPos.y);
+  
+  // Use setAttribute for SVG class instead of className
+  let classNames = 'talent-connection-line';
+  if (isActive) classNames += ' active';
+  if (isAvailable) classNames += ' available';
+  line.setAttribute('class', classNames);
+  
+  svgContainer.appendChild(line);
+}
+
+export function updateTalentTreeUI(game) {
+  // Update gold display
+  const goldDisplay = document.getElementById('talent-gold');
+  if (goldDisplay) {
+    goldDisplay.textContent = game.player.gold;
+  }
+  
+  // Update talent points display
+  const talentPointsDisplay = document.getElementById('talent-points');
+  if (talentPointsDisplay) {
+    talentPointsDisplay.textContent = game.getTotalTalentPoints();
+  }
+  
+  // Update ascension count
+  const ascensionDisplay = document.getElementById('ascension-count');
+  if (ascensionDisplay) {
+    ascensionDisplay.textContent = game.ascensionCount;
+  }
+  
+  // Re-populate to update costs and availability
+  populateTalentTree(game, document);
+}
+
+// Talent Tooltip Functions
+export function showTalentTooltip(event, talent, currentLevel, nextCost) {
+  const tooltip = document.getElementById('talent-tooltip');
+  const nameElement = document.getElementById('talent-tooltip-name');
+  const levelElement = document.getElementById('talent-tooltip-level');
+  const descriptionElement = document.getElementById('talent-tooltip-description');
+  const effectElement = document.getElementById('talent-tooltip-effect');
+  const costElement = document.getElementById('talent-tooltip-cost');
+  
+  if (tooltip && nameElement && levelElement && descriptionElement && effectElement && costElement) {
+    nameElement.textContent = talent.name;
+    levelElement.textContent = `${currentLevel}/${talent.maxLevel}`;
+    descriptionElement.textContent = talent.description;
+    effectElement.textContent = talent.effect;
+    
+    if (currentLevel >= talent.maxLevel) {
+      costElement.textContent = 'Max Level';
+    } else {
+      costElement.textContent = `Cost: ${nextCost} gold`;
+    }
+    
+    tooltip.style.display = 'block';
+    tooltip.classList.add('visible');
+    updateTalentTooltipPosition(event, document);
+  }
+}
+
+function hideTalentTooltip() {
+  const tooltip = document.getElementById('talent-tooltip');
+  if (tooltip) {
+    tooltip.classList.remove('visible');
+    setTimeout(() => {
+      if (!tooltip.classList.contains('visible')) {
+        tooltip.style.display = 'none';
+      }
+    }, 200);
+  }
+}
+
+function updateTalentTooltipPosition(event, document) {
+  const tooltip = document.getElementById('talent-tooltip');
+  if (tooltip && tooltip.style.display === 'block') {
+    // Place tooltip slightly above and to the right of the cursor
+    let x = event.clientX + 12;
+    let y = event.clientY - 8 - tooltip.offsetHeight;
+    // If above is offscreen, place below
+    if (y < 0) y = event.clientY + 12;
+    // Prevent tooltip from going off right/bottom edge
+    const tooltipRect = tooltip.getBoundingClientRect();
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    if (x + tooltipRect.width > windowWidth) x = windowWidth - tooltipRect.width - 8;
+    if (y + tooltipRect.height > windowHeight) y = windowHeight - tooltipRect.height - 8;
+    if (x < 0) x = 8;
+    if (y < 0) y = 8;
+    tooltip.style.left = x + 'px';
+    tooltip.style.top = y + 'px';
+  }
+}
+
+
 
 // Talent Tree Data - Easy to modify and extend
 export const TALENT_TREES = {
-  exploration: createTalentPathway({
-    name: 'Path of Exploration',
-    icon: '🗺️',
-    description: 'Unlock new zones and content',
-    nodes: [
-      // Tier 1 - Starting nodes
-      {
-        id: 'exploration_1',
-        name: 'Zone Scout',
-        icon: '🧭',
-        description: 'Unlocks additional zones earlier',
-        effect: 'Reduce zone unlock level requirements by 2',
-        cost: 50,
-        tier: 1,
-        position: { x: 2, y: 0 },
-        prerequisites: []
-      },
-      // Tier 2 - First branch
-      {
-        id: 'exploration_2a',
-        name: 'Monster Hunter',
-        icon: '🏹',
-        description: 'Encounter rare enemies more often',
-        effect: 'Increase rare enemy spawn chance by 25%',
-        cost: 75,
-        tier: 2,
-        position: { x: 1, y: 1 },
-        prerequisites: ['exploration_1']
-      },
-      {
-        id: 'exploration_2b',
-        name: 'Zone Master',
-        icon: '🌍',
-        description: 'Better understanding of zones',
-        effect: 'Gain 15% more XP and gold from all zones',
-        cost: 75,
-        maxLevel: 2,
-        tier: 2,
-        position: { x: 3, y: 1 },
-        prerequisites: ['exploration_1']
-      },
-      // Tier 3 - Specialized branches
-      {
-        id: 'exploration_3a',
-        name: 'Beast Tracker',
-        icon: '🐺',
-        description: 'Specialize in hunting beasts',
-        effect: 'Double drop chance from beast-type enemies',
-        cost: 100,
-        tier: 3,
-        position: { x: 0, y: 2 },
-        prerequisites: ['exploration_2a']
-      },
-      {
-        id: 'exploration_3b',
-        name: 'Boss Slayer',
-        icon: '🗡️',
-        description: 'Reduce boss requirements',
-        effect: 'Reduce boss spawn requirements by 5 kills',
-        cost: 100,
-        tier: 3,
-        position: { x: 2, y: 2 },
-        prerequisites: ['exploration_2a', 'exploration_2b']
-      },
-      {
-        id: 'exploration_3c',
-        name: 'Territory Control',
-        icon: '🏰',
-        description: 'Dominate zones completely',
-        effect: 'Killing 100 enemies in a zone grants permanent 10% bonus',
-        cost: 120,
-        maxLevel: 3,
-        tier: 3,
-        position: { x: 4, y: 2 },
-        prerequisites: ['exploration_2b']
-      },
-      // Tier 4 - Master nodes
-      {
-        id: 'exploration_4',
-        name: 'Realm Walker',
-        icon: '👑',
-        description: 'Master of all zones',
-        effect: 'Unlocks special endgame zones and 25% global bonus',
-        cost: 250,
-        tier: 4,
-        position: { x: 2, y: 3 },
-        prerequisites: ['exploration_3a', 'exploration_3b', 'exploration_3c']
-      }
-    ]
-  }),
-
-  power: createTalentPathway({
+  power: {
     name: 'Path of Power',
     icon: '⚔️',
     description: 'Increase combat effectiveness',
@@ -131,7 +244,9 @@ export const TALENT_TREES = {
         name: 'Warrior Training',
         icon: '💪',
         description: 'Increase base attack power',
-        effect: '+5 base attack per level',
+        effect: '+5 attack',
+        stat: 'attack',
+        value: 5,
         cost: 40,
         maxLevel: 5,
         tier: 1,
@@ -144,7 +259,7 @@ export const TALENT_TREES = {
         name: 'Weapon Mastery',
         icon: '🗡️',
         description: 'Master weapon combat',
-        effect: '+10% weapon damage per level',
+        effect: '+10% attack per level',
         cost: 60,
         maxLevel: 3,
         tier: 2,
@@ -213,9 +328,9 @@ export const TALENT_TREES = {
         prerequisites: ['power_3a', 'power_3b', 'power_3c']
       }
     ]
-  }),
+  },
 
-  wealth: createTalentPathway({
+  wealth: {
     name: 'Path of Wealth',
     icon: '💰',
     description: 'Increase gold gain and rewards',
@@ -308,9 +423,9 @@ export const TALENT_TREES = {
         prerequisites: ['wealth_3a', 'wealth_3b', 'wealth_3c']
       }
     ]
-  }),
+  },
 
-  knowledge: createTalentPathway({
+  knowledge: {
     name: 'Path of Knowledge',
     icon: '📚',
     description: 'Increase experience gain',
@@ -403,43 +518,111 @@ export const TALENT_TREES = {
         prerequisites: ['knowledge_3a', 'knowledge_3b', 'knowledge_3c']
       }
     ]
-  })
+  }
 };
 
-// Template for adding new pathways - just copy and modify
-export const NEW_PATHWAY_TEMPLATE = {
-  pathwayId: createTalentPathway({
-    name: 'New Pathway Name',
-    icon: '🆕',
-    description: 'Description of what this pathway does',
-    nodes: [
-      {
-        id: 'pathway_1',
-        name: 'Starting Node',
-        icon: '🌟',
-        description: 'Description of the talent',
-        effect: 'What the talent does mechanically',
-        cost: 50,
-        maxLevel: 1,
-        tier: 1,
-        position: { x: 2, y: 0 },
-        prerequisites: []
-      }
-      // Add more nodes here following the pattern
-    ]
-  })
-};
 
-// Template for adding new nodes to existing pathways
-export const NEW_NODE_TEMPLATE = {
-  id: 'pathway_new',
-  name: 'New Talent Name',
-  icon: '🆕',
-  description: 'What this talent does',
-  effect: 'Mechanical effect with numbers',
-  cost: 100,
-  maxLevel: 1,
-  tier: 2,
-  position: { x: 1, y: 1 }, // Position in the grid
-  prerequisites: ['prerequisite_node_id'] // Array of required talents
-};
+// energy: {
+//     name: 'Path of Energy',
+//     icon: '⚡',
+//     description: 'Enhance energy usage and energy storage',
+//     nodes: [
+//       // Tier 1 - Starting nodes
+//       {
+//         id: 'energy_1',
+//         name: 'Energy Flow',
+//         description: 'Improve energy regeneration rate',
+//         icon: '💧',
+//         effect: '+5 attack',
+//         stat: 'attack',
+//         value: 5,
+//         cost: 40,
+//         maxLevel: 5,
+//         tier: 1,
+//         position: { x: 2, y: 0 },
+//         prerequisites: []
+//       },
+//       {
+//         id: 'energy_2',
+//         name: 'Energy Storage',
+//         icon: '💧',
+//         description: 'Increase energy storage capacity',
+//         effect: '+10% energy storage per level',
+//         cost: 50,
+//         tier: 1,
+//         position: { x: 2, y: 0 },
+//         prerequisites: []
+//       },
+//       // Tier 2 - First branch
+//       {
+//         id: 'exploration_2a',
+//         name: 'Monster Hunter',
+//         icon: '🏹',
+//         description: 'Encounter rare enemies more often',
+//         effect: 'Increase rare enemy spawn chance by 25%',
+//         cost: 75,
+//         tier: 2,
+//         position: { x: 1, y: 1 },
+//         prerequisites: ['exploration_1']
+//       },
+//       {
+//         id: 'exploration_2b',
+//         name: 'Zone Master',
+//         icon: '🌍',
+//         description: 'Better understanding of zones',
+//         effect: 'Gain 15% more XP and gold from all zones',
+//         cost: 75,
+//         maxLevel: 2,
+//         tier: 2,
+//         position: { x: 3, y: 1 },
+//         prerequisites: ['exploration_1']
+//       },
+//       // Tier 3 - Specialized branches
+//       {
+//         id: 'exploration_3a',
+//         name: 'Beast Tracker',
+//         icon: '🐺',
+//         description: 'Specialize in hunting beasts',
+//         effect: 'Double drop chance from beast-type enemies',
+//         cost: 100,
+//         tier: 3,
+//         position: { x: 0, y: 2 },
+//         prerequisites: ['exploration_2a']
+//       },
+//       {
+//         id: 'exploration_3b',
+//         name: 'Boss Slayer',
+//         icon: '🗡️',
+//         description: 'Reduce boss requirements',
+//         effect: 'Reduce boss spawn requirements by 5 kills',
+//         cost: 100,
+//         tier: 3,
+//         position: { x: 2, y: 2 },
+//         prerequisites: ['exploration_2a', 'exploration_2b']
+//       },
+//       {
+//         id: 'exploration_3c',
+//         name: 'Territory Control',
+//         icon: '🏰',
+//         description: 'Dominate zones completely',
+//         effect: 'Killing 100 enemies in a zone grants permanent 10% bonus',
+//         cost: 120,
+//         maxLevel: 3,
+//         tier: 3,
+//         position: { x: 4, y: 2 },
+//         prerequisites: ['exploration_2b']
+//       },
+//       // Tier 4 - Master nodes
+//       {
+//         id: 'exploration_4',
+//         name: 'Realm Walker',
+//         icon: '👑',
+//         description: 'Master of all zones',
+//         effect: 'Unlocks special endgame zones and 25% global bonus',
+//         cost: 250,
+//         tier: 4,
+//         position: { x: 2, y: 3 },
+//         prerequisites: ['exploration_3a', 'exploration_3b', 'exploration_3c']
+//       }
+//     ]
+//   },

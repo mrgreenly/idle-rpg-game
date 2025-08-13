@@ -1,3 +1,299 @@
+// Helper function to format item name with rarity
+export function formatItemNameWithRarity(item) {
+  const rarityData = ITEM_RARITIES[item.rarity] || ITEM_RARITIES.common;
+  
+  // For common items, just show the base name
+  if (item.rarity === 'common') {
+    return item.name;
+  }
+  
+  // For other rarities, combine prefixes, base name, and suffixes
+  let displayName = item.name;
+  
+  // Add prefixes before the name
+  if (item.prefixes && item.prefixes.length > 0) {
+    displayName = item.prefixes.join(' ') + ' ' + displayName;
+  }
+  
+  // Add suffixes after the name
+  if (item.suffixes && item.suffixes.length > 0) {
+    displayName = displayName + ' ' + item.suffixes.join(' ');
+  }
+  
+  return displayName;
+}
+
+// Function for generating random items with zone-specific rarity restrictions
+export function generateRandomItemForZone(allowedRarities, guaranteedRarity) {
+  // Filter rarities to only those allowed in the zone
+  const zoneRarities = {};
+  allowedRarities.forEach(rarity => {
+    if (ITEM_RARITIES[rarity]) {
+      zoneRarities[rarity] = ITEM_RARITIES[rarity];
+    }
+  });
+  console.log(zoneRarities);
+  // If no valid rarities, fallback to common
+  if (Object.keys(zoneRarities).length === 0) {
+    zoneRarities.common = ITEM_RARITIES.common;
+    console.log('No valid rarities for zone, defaulting to common');
+  }
+
+  const rarityRoll = Math.random() * 100;
+  let selectedRarity = 'common';
+  let cumulativeChance = 0;
+  
+  for (const [rarity, data] of Object.entries(zoneRarities)) {
+    cumulativeChance += data.chance;
+    if (rarityRoll <= cumulativeChance) {
+      selectedRarity = rarity;
+      break;
+    }
+  }
+
+  if (guaranteedRarity || 0) {
+    // If guaranteed rarity is specified, use it
+    selectedRarity = allowedRarities[0];
+  }
+  
+  // Select random item type and base item
+  const itemTypes = Object.keys(BASE_ITEMS);
+  const selectedType = itemTypes[Math.floor(Math.random() * itemTypes.length)];
+  const baseItems = BASE_ITEMS[selectedType];
+  const baseItem = baseItems[Math.floor(Math.random() * baseItems.length)];
+  
+  const rarityData = ITEM_RARITIES[selectedRarity];
+  
+  // Create the item with base stats (no multiplier)
+  const item = {
+    name: baseItem.name,
+    type: selectedType,
+    rarity: selectedRarity,
+    attack: baseItem.attack,
+    maxHp: baseItem.maxHp,
+    attackSpeed: baseItem.attackSpeed,
+    critChance: baseItem.critChance,
+    critDamage: baseItem.critDamage,
+    dodge: baseItem.dodge,
+    blockChance: baseItem.blockChance,
+    price: Math.floor((baseItem.baseValue || 10) * (rarityData.priceMultiplier || 1.0)),
+    handType: baseItem.handType || '1h',
+    baseAttackInterval: baseItem.baseAttackInterval,
+    prefixes: [],
+    suffixes: []
+  };
+
+  // Add affixes based on rarity (same logic as generateRandomItem)
+  const affixCount = rarityData.affixCount;
+  if (affixCount > 0) {
+    const maxPrefixes = Math.min(3, Math.ceil(affixCount / 2));
+    const maxSuffixes = Math.min(3, affixCount - maxPrefixes);
+    
+    // Add prefixes - filter by item type
+    const availablePrefixes = rarityData.prefix.filter(prefix => {
+      const affixData = AFFIXES.prefix[prefix];
+      return affixData && affixData.allowedTypes.includes(selectedType);
+    });
+    
+    for (let i = 0; i < maxPrefixes && availablePrefixes.length > 0; i++) {
+      const randomIndex = Math.floor(Math.random() * availablePrefixes.length);
+      const selectedPrefix = availablePrefixes.splice(randomIndex, 1)[0];
+      item.prefixes.push(selectedPrefix);
+      
+      // Apply prefix stats
+      const prefixStats = AFFIXES.prefix[selectedPrefix].stats;
+      if (prefixStats) {
+        Object.keys(prefixStats).forEach(stat => {
+          item[stat] += prefixStats[stat];
+        });
+      }
+    }
+    
+    // Add suffixes - filter by item type
+    const availableSuffixes = rarityData.suffix.filter(suffix => {
+      const affixData = AFFIXES.suffix[suffix];
+      return affixData && affixData.allowedTypes.includes(selectedType);
+    });
+    
+    for (let i = 0; i < maxSuffixes && availableSuffixes.length > 0; i++) {
+      const randomIndex = Math.floor(Math.random() * availableSuffixes.length);
+      const selectedSuffix = availableSuffixes.splice(randomIndex, 1)[0];
+      item.suffixes.push(selectedSuffix);
+      
+      // Apply suffix stats
+      const suffixStats = AFFIXES.suffix[selectedSuffix].stats;
+      if (suffixStats) {
+        Object.keys(suffixStats).forEach(stat => {
+          item[stat] += suffixStats[stat];
+        });
+      }
+    }
+  }
+  
+  // Generate name with prefixes/suffixes
+  let fullName = item.name;
+  
+  if (item.prefixes.length > 0) {
+    const prefix = item.prefixes[Math.floor(Math.random() * item.prefixes.length)];
+    fullName = `${prefix} ${fullName}`;
+  }
+  
+  if (item.suffixes.length > 0) {
+    const suffix = item.suffixes[Math.floor(Math.random() * item.suffixes.length)];
+    fullName = `${fullName} ${suffix}`;
+  }
+  
+  item.fullName = fullName;
+  
+  return item;
+}
+
+// Helper function to separate base stats from affix bonuses
+export function separateItemStats(item) {
+  // Find the base item template
+  const baseItems = BASE_ITEMS[item.type];
+  const baseTemplate = baseItems?.find(base => base.name === item.name);
+  
+  if (!baseTemplate) {
+    // Special handling for starter items (like Rusty Sword)
+    const isStarterItem = item.name === 'Rusty Sword' || (!item.prefixes && !item.suffixes);
+    
+    if (!isStarterItem) {
+      console.warn('Base template not found for item:', item);
+    }
+    
+    // For items with affixes, try to reverse-engineer base stats
+    if (item.prefixes || item.suffixes) {
+      // Calculate total affix bonuses
+      const totalAffixStats = {
+        attack: 0,
+        maxHp: 0,
+        attackSpeed: 0,
+        critChance: 0,
+        critDamage: 0,
+        dodge: 0,
+        blockChance: 0
+      };
+      
+      // Add prefix bonuses
+      if (item.prefixes) {
+        item.prefixes.forEach(prefix => {
+          const prefixStats = AFFIXES.prefix[prefix]?.stats;
+          if (prefixStats) {
+            Object.keys(prefixStats).forEach(stat => {
+              if (totalAffixStats.hasOwnProperty(stat)) {
+                totalAffixStats[stat] += prefixStats[stat];
+              }
+            });
+          }
+        });
+      }
+      
+      // Add suffix bonuses
+      if (item.suffixes) {
+        item.suffixes.forEach(suffix => {
+          const suffixStats = AFFIXES.suffix[suffix]?.stats;
+          if (suffixStats) {
+            Object.keys(suffixStats).forEach(stat => {
+              if (totalAffixStats.hasOwnProperty(stat)) {
+                totalAffixStats[stat] += suffixStats[stat];
+              }
+            });
+          }
+        });
+      }
+      
+      // Calculate base stats by subtracting affix stats from current item stats
+      return {
+        baseStats: {
+          attack: (item.attack || 0) - totalAffixStats.attack,
+          maxHp: (item.maxHp || 0) - totalAffixStats.maxHp,
+          attackSpeed: (item.attackSpeed || 0) - totalAffixStats.attackSpeed,
+          critChance: (item.critChance || 0) - totalAffixStats.critChance,
+          critDamage: (item.critDamage || 0) - totalAffixStats.critDamage,
+          dodge: (item.dodge || 0) - totalAffixStats.dodge,
+          blockChance: (item.blockChance || 0) - totalAffixStats.blockChance
+        },
+        affixStats: totalAffixStats
+      };
+    }
+    
+    // Fallback if no affixes - use the item's own stats as base stats
+    return {
+      baseStats: {
+        attack: item.attack || 0,
+        maxHp: item.maxHp || 0,
+        attackSpeed: item.attackSpeed || 0,
+        critChance: item.critChance || 0,
+        critDamage: item.critDamage || 0,
+        dodge: item.dodge || 0,
+        blockChance: item.blockChance || 0
+      },
+      affixStats: {
+        attack: 0,
+        maxHp: 0,
+        attackSpeed: 0,
+        critChance: 0,
+        critDamage: 0,
+        dodge: 0,
+        blockChance: 0
+      }
+    };
+  }
+  
+  // Calculate affix bonuses by applying all prefixes and suffixes
+  const affixStats = {
+    attack: 0,
+    maxHp: 0,
+    attackSpeed: 0,
+    critChance: 0,
+    critDamage: 0,
+    dodge: 0,
+    blockChance: 0
+  };
+  
+  // Add prefix bonuses
+  if (item.prefixes) {
+    item.prefixes.forEach(prefix => {
+      const prefixStats = AFFIXES.prefix[prefix]?.stats;
+      if (prefixStats) {
+        Object.keys(prefixStats).forEach(stat => {
+          if (affixStats.hasOwnProperty(stat)) {
+            affixStats[stat] += prefixStats[stat];
+          }
+        });
+      }
+    });
+  }
+  
+  // Add suffix bonuses
+  if (item.suffixes) {
+    item.suffixes.forEach(suffix => {
+      const suffixStats = AFFIXES.suffix[suffix]?.stats;
+      if (suffixStats) {
+        Object.keys(suffixStats).forEach(stat => {
+          if (affixStats.hasOwnProperty(stat)) {
+            affixStats[stat] += suffixStats[stat];
+          }
+        });
+      }
+    });
+  }
+  
+  return {
+    baseStats: {
+      attack: baseTemplate.attack || 0,
+      maxHp: baseTemplate.maxHp || 0,
+      attackSpeed: baseTemplate.attackSpeed || 0,
+      critChance: baseTemplate.critChance || 0,
+      critDamage: baseTemplate.critDamage || 0,
+      dodge: baseTemplate.dodge || 0,
+      blockChance: baseTemplate.blockChance || 0
+    },
+    affixStats: affixStats
+  };
+}
+
 // Item rarity definitions with stats and appearance
 export const ITEM_RARITIES = {
   common: {
