@@ -38,7 +38,7 @@
         </div>
       `;let y=0;for(const k in t.player.equipment){const u=t.player.equipment[k];u&&u[r]&&u[r]!==0&&(p+=`
             <div class="stat-breakdown-item">
-              <span>${u.fullName||u.name} (${k}):</span>
+              <span>${u.fullName||u.name}:</span>
               <span class="stat-breakdown-value">+${u[r]}${r==="attackSpeed"?"%":h}</span>
             </div>
           `,y+=u[r])}y===0&&(p+=`
