@@ -5,8 +5,8 @@
     <link rel="icon" type="image/svg+xml" href="/idle-rpg-game/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Short Life</title>
-    <script type="module" crossorigin src="/idle-rpg-game/assets/index-BrqcSLDy.js"></script>
-    <link rel="stylesheet" crossorigin href="/idle-rpg-game/assets/index-DpVAYLi-.css">
+    <script type="module" crossorigin src="/idle-rpg-game/assets/index-c9eu21vP.js"></script>
+    <link rel="stylesheet" crossorigin href="/idle-rpg-game/assets/index-CMlMGLnq.css">
   </head>
   <body>
     <div id="app">
@@ -33,43 +33,53 @@
             <div class="player-side">
               <div class="player-display">
                 <img id="player-image" class="player-image" />
-                <h4>You</h4>
-              </div>
-              <div class="character-display">
-                <div class="hp-bar">
-                  <div id="player-hp-bar" class="hp-fill"></div>
-                  <span class="hp-bar-label" id="player-hp-text">100/100</span>
+                <div class="player-info">
+                  <span class="player-name">You</span>
+                  <span class="player-attack" id="player-attack">10</span>
                 </div>
+              </div>
+              
+              <div class="character-display">
                 <div class="attack-bar">
                   <div id="player-attack-fill" class="attack-fill"></div>
                   <span id="player-attack-label" class="attack-bar-label">Attack</span>
                 </div>
-                <div class="character-info">
-                  <div>ATK: <span id="player-attack">10</span></div>
+                <div class="hp-bar">
+                  <div id="player-hp-bar" class="hp-fill"></div>
+                  <span class="hp-bar-label" id="player-hp-text">100/100</span>
                 </div>
-              </div>
-            </div>
+                </div>
+                <div class="age-bar">
+                  <div id="player-age-bar" class="age-fill"></div>
+                  <span class="age-bar-label" id="player-age-text">18 yrs old</span>
+                </div>
+                
+                </div>
+              
+            
 
             <div class="enemy-side">
               <div class="enemy-display">
+                
+                
                 <img id="enemy-image" class="enemy-image"/>
-                <h4 id="enemy-title">Slime</h4>
+                <div class="enemy-info">
+                  <span class="enemy-attack" id="enemy-attack">10</span>
+                  <span class="enemy-title" id="enemy-title">Slime</span>
               </div>
+            </div>
               <div class="character-display">
-                <div class="hp-bar">
-                  <div id="enemy-hp-bar" class="hp-fill"></div>
-                  <span class="hp-bar-label" id="enemy-hp-text">50/50</span>
-                </div>
                 <div class="attack-bar">
                   <div id="enemy-attack-fill" class="attack-fill"></div>
                   <span id="enemy-attack-label" class="attack-bar-label">Attack</span>
                 </div>
-                <div class="character-info">
-                  <div>ATK: <span id="enemy-attack">8</span></div>
+                <div class="hp-bar">
+                  <div id="enemy-hp-bar" class="hp-fill"></div>
+                  <span class="hp-bar-label" id="enemy-hp-text">50/50</span>
                 </div>
               </div>
             </div>
-          </div>
+            </div>
 
           <!-- Boss Warning Overlay -->
           <div id="boss-warning" class="boss-warning" style="display: none;">
@@ -386,19 +396,6 @@
           </div>
 
           <div class="talent-pathways">
-            <!-- Exploration Pathway -->
-            <!-- <div id="pathway-exploration" class="talent-pathway exploration">
-              <div class="talent-pathway-header">
-                <div class="talent-pathway-icon">🗺️</div>
-                <h3 class="talent-pathway-name">Exploration</h3>
-              </div>
-              <div class="talent-tree-grid" id="exploration-tree">
-                <svg class="talent-connections" id="exploration-connections"></svg>
-                <div class="talent-nodes-container" id="exploration-nodes">
-
-                </div>
-              </div>
-            </div> -->
 
             <!-- Power Pathway -->
             <div id="pathway-power" class="talent-pathway power">
@@ -437,6 +434,22 @@
               <div class="talent-tree-grid" id="knowledge-tree">
                 <svg class="talent-connections" id="knowledge-connections"></svg>
                 <div class="talent-nodes-container" id="knowledge-nodes">
+                  <!-- Nodes will be positioned by JavaScript -->
+                </div>
+              </div>
+            </div>
+          
+        
+
+        <!-- Time Pathway -->
+            <div id="pathway-time" class="talent-pathway time">
+              <div class="talent-pathway-header">
+                <div class="talent-pathway-icon">⏳</div>
+                <h3 class="talent-pathway-name">Time</h3>
+              </div>
+              <div class="talent-tree-grid" id="time-tree">
+                <svg class="talent-connections" id="time-connections"></svg>
+                <div class="talent-nodes-container" id="time-nodes">
                   <!-- Nodes will be positioned by JavaScript -->
                 </div>
               </div>
