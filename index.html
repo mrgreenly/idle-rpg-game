@@ -5,8 +5,8 @@
     <link rel="icon" type="image/svg+xml" href="/idle-rpg-game/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Short Life</title>
-    <script type="module" crossorigin src="/idle-rpg-game/assets/index-Dl8cZMBj.js"></script>
-    <link rel="stylesheet" crossorigin href="/idle-rpg-game/assets/index-axUPplJy.css">
+    <script type="module" crossorigin src="/idle-rpg-game/assets/index-Beu2IIIs.js"></script>
+    <link rel="stylesheet" crossorigin href="/idle-rpg-game/assets/index-CC9wzYJt.css">
   </head>
   <body>
     <div id="app">
@@ -33,16 +33,14 @@
             <div class="player-side">
               <div class="player-display">
                 <img id="player-image" class="player-image" />
+                <div class="character-display">
                 <div class="player-info">
                   <span class="player-name">You</span>
-                  <div class="player-attack-info">
+                  <div class="attack-info">
                     <span class="player-attack-icon">⚔️</span> 
                     <span class="player-attack" id="player-attack">10</span>
                     </div>
                 </div>
-              </div>
-              
-              <div class="character-display">
                 <div class="attack-bar">
                   <div id="player-attack-fill" class="attack-fill"></div>
                   <span id="player-attack-label" class="attack-bar-label">Attack</span>
@@ -51,10 +49,11 @@
                   <div id="player-hp-bar" class="hp-fill"></div>
                   <span class="hp-bar-label" id="player-hp-text">100/100</span>
                 </div>
-                </div>
                 <div class="age-bar">
                   <div id="player-age-bar" class="age-fill"></div>
                   <span class="age-bar-label" id="player-age-text">18 yrs old</span>
+                </div>
+                </div>
                 </div>
                 
                 </div>
@@ -66,15 +65,16 @@
                 
                 
                 <img id="enemy-image" class="enemy-image"/>
+                <div class="character-display">
                 <div class="enemy-info">
-                  <div class="enemy-attack-info">
+                  <div class="attack-info">
                     <span class="enemy-attack" id="enemy-attack">10</span>
                     <span class="enemy-attack-icon">⚔️</span>
                   </div>
                   <span class="enemy-title" id="enemy-title">Slime</span>
               </div>
-            </div>
-              <div class="character-display">
+            
+              
                 <div class="attack-bar">
                   <div id="enemy-attack-fill" class="attack-fill"></div>
                   <span id="enemy-attack-label" class="attack-bar-label">Attack</span>
@@ -84,6 +84,7 @@
                   <span class="hp-bar-label" id="enemy-hp-text">50/50</span>
                 </div>
               </div>
+            </div>
             </div>
             </div>
 
